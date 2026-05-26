@@ -2,16 +2,17 @@ import { Colors } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const levels = [
-  { number: 1, name: 'Iniciante', difficulty: 'Fácil', diffStyle: 'easy', stars: 0, locked: false },
-  { number: 2, name: 'Aprendiz', difficulty: 'Fácil', diffStyle: 'easy', stars: 0, locked: false },
-  { number: 3, name: 'Intermediário', difficulty: 'Médio', diffStyle: 'med', stars: 0, locked: false },
-  { number: 4, name: 'Avançado', difficulty: 'Médio', diffStyle: 'med', stars: 0, locked: true },
-  { number: 5, name: 'Expert', difficulty: 'Difícil', diffStyle: 'hard', stars: 0, locked: true },
-  { number: 6, name: 'Mestre', difficulty: 'Difícil', diffStyle: 'hard', stars: 0, locked: true },
-  { number: 7, name: 'Lendário', difficulty: 'Extremo', diffStyle: 'xtr', stars: 0, locked: true },
-  { number: 8, name: 'Imortal', difficulty: 'Extremo', diffStyle: 'xtr', stars: 0, locked: true },
+  { number: 1, name: 'Iniciante',     difficulty: 'Fácil',   diffStyle: 'easy', stars: 0, locked: false },
+  { number: 2, name: 'Aprendiz',      difficulty: 'Fácil',   diffStyle: 'easy', stars: 0, locked: false },
+  { number: 3, name: 'Intermediário', difficulty: 'Médio',   diffStyle: 'med',  stars: 0, locked: false },
+  { number: 4, name: 'Avançado',      difficulty: 'Médio',   diffStyle: 'med',  stars: 0, locked: true  },
+  { number: 5, name: 'Expert',        difficulty: 'Difícil', diffStyle: 'hard', stars: 0, locked: true  },
+  { number: 6, name: 'Mestre',        difficulty: 'Difícil', diffStyle: 'hard', stars: 0, locked: true  },
+  { number: 7, name: 'Lendário',      difficulty: 'Extremo', diffStyle: 'xtr',  stars: 0, locked: true  },
+  { number: 8, name: 'Imortal',       difficulty: 'Extremo', diffStyle: 'xtr',  stars: 0, locked: true  },
 ];
 
 const diffColors: Record<string, { bg: string; text: string }> = {
@@ -23,12 +24,12 @@ const diffColors: Record<string, { bg: string; text: string }> = {
 
 const modeLabel: Record<string, string> = {
   multiple: 'Com opções',
-  free: 'Sem opções',
+  free:     'Sem opções',
 };
 
 const modeBadge: Record<string, { bg: string; text: string }> = {
   multiple: { bg: Colors.primaryLight, text: '#3C3489' },
-  free:     { bg: '#E1F5EE', text: '#085041' },
+  free:     { bg: '#E1F5EE',           text: '#085041' },
 };
 
 export default function LevelsScreen() {
@@ -38,7 +39,7 @@ export default function LevelsScreen() {
   const badge = modeBadge[mode] ?? modeBadge.multiple;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Topbar */}
       <View style={styles.topbar}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
@@ -65,15 +66,11 @@ export default function LevelsScreen() {
                 if (!lvl.locked) router.push(`/game?mode=${mode}&level=${lvl.number}`);
               }}
             >
-              {/* Badge dificuldade */}
               <View style={[styles.diffBadge, { backgroundColor: diff.bg }]}>
                 <Text style={[styles.diffText, { color: diff.text }]}>{lvl.difficulty}</Text>
               </View>
-
               <Text style={styles.lvlNumber}>{lvl.number}</Text>
               <Text style={styles.lvlName}>{lvl.name}</Text>
-
-              {/* Estrelas */}
               <Text style={styles.stars}>
                 {lvl.locked
                   ? '🔒'
@@ -83,7 +80,7 @@ export default function LevelsScreen() {
           );
         })}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -92,7 +89,7 @@ const styles = StyleSheet.create({
 
   topbar: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    paddingTop: 56, paddingBottom: 12,
+    paddingVertical: 12,
   },
   backBtn: {
     width: 34, height: 34,
@@ -105,9 +102,7 @@ const styles = StyleSheet.create({
   badge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
   badgeText: { fontSize: 11, fontWeight: '500' },
 
-  grid: {
-    flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingBottom: 32,
-  },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingBottom: 32 },
   card: {
     width: '47.5%',
     backgroundColor: Colors.background,
@@ -125,6 +120,6 @@ const styles = StyleSheet.create({
   diffText: { fontSize: 10, fontWeight: '500' },
 
   lvlNumber: { fontSize: 26, fontWeight: '500', color: Colors.textPrimary },
-  lvlName: { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
-  stars: { fontSize: 13, marginTop: 6, letterSpacing: 1, color: Colors.primary },
+  lvlName:   { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
+  stars:     { fontSize: 13, marginTop: 6, letterSpacing: 1, color: Colors.primary },
 });

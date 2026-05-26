@@ -11,8 +11,8 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-// ── dados mockados ──────────────────────────────────────────────
 const QUESTIONS = [
   {
     id: 1,
@@ -56,7 +56,6 @@ export default function GameScreen() {
       textAnswer.toLowerCase().includes(question.answer.split(' ')[1]?.toLowerCase() ?? '')
     : selected === question.answer;
 
-  // ── timer ──────────────────────────────────────────────────────
   useEffect(() => {
     setTimeLeft(TIMER_SECS);
     timerRef.current = setInterval(() => {
@@ -70,7 +69,6 @@ export default function GameScreen() {
 
   function stopTimer() { clearInterval(timerRef.current!); }
 
-  // ── ações ──────────────────────────────────────────────────────
   function pickOption(opt: string) {
     if (selected) return;
     setSelected(opt);
@@ -93,15 +91,11 @@ export default function GameScreen() {
     setTextAnswer('');
   }
 
-  function skip() {
-    next();
-  }
-
   const progress = ((index % QUESTIONS.length) + 1) / QUESTIONS.length;
   const timerRed = timeLeft <= 8;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {/* Topbar */}
       <View style={styles.topbar}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
@@ -135,7 +129,7 @@ export default function GameScreen() {
 
         <Text style={styles.questionText}>{question.question}</Text>
 
-        {/* ── MODO COM OPÇÕES ── */}
+        {/* MODO COM OPÇÕES */}
         {!isFree && (
           <>
             {optsVisible && (
@@ -186,7 +180,7 @@ export default function GameScreen() {
           </>
         )}
 
-        {/* ── MODO LIVRE ── */}
+        {/* MODO LIVRE */}
         {isFree && !showFeedback && (
           <>
             <TextInput
@@ -199,19 +193,19 @@ export default function GameScreen() {
               onSubmitEditing={confirmFree}
             />
             <Text style={styles.hint}>
-              <Ionicons name="information-circle-outline" size={12} /> Não precisa ser exato — reconhecemos variações
+              Não precisa ser exato — reconhecemos variações
             </Text>
             <TouchableOpacity style={styles.confirmBtn} onPress={confirmFree}>
               <Ionicons name="checkmark" size={18} color={Colors.primaryLight} />
               <Text style={styles.confirmText}>Confirmar resposta</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={skip}>
+            <TouchableOpacity onPress={next}>
               <Text style={styles.skipText}>Pular esta pergunta</Text>
             </TouchableOpacity>
           </>
         )}
 
-        {/* ── FEEDBACK ── */}
+        {/* FEEDBACK */}
         {showFeedback && (
           <View style={[styles.feedback, isCorrect ? styles.feedbackOk : styles.feedbackErr]}>
             <View style={styles.fbHead}>
@@ -237,7 +231,7 @@ export default function GameScreen() {
           </View>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -247,7 +241,7 @@ const styles = StyleSheet.create({
 
   topbar: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    paddingHorizontal: 16, paddingTop: 56, paddingBottom: 8,
+    paddingHorizontal: 16, paddingVertical: 10,
   },
   backBtn: {
     width: 34, height: 34, borderRadius: 10,
