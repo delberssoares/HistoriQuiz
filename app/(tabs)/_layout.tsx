@@ -6,7 +6,18 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: Colors.background,
+          borderBottomWidth: 0.5,
+          borderBottomColor: Colors.border,
+        } as any,
+        headerTitleStyle: {
+          fontSize: 16,
+          fontWeight: '600',
+          color: Colors.textPrimary,
+        },
+        headerShadowVisible: false,
         tabBarActiveTintColor: Colors.primary,
         tabBarInactiveTintColor: Colors.textSecondary,
         tabBarStyle: {
@@ -23,7 +34,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Início',
+          title: 'HistóriQuiz',
+          tabBarLabel: 'Início',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
           ),
