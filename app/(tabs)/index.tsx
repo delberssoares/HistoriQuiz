@@ -1,14 +1,8 @@
 import { Colors } from '@/constants/theme';
+import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-const stats = [
-  { value: '0', label: 'Partidas' },
-  { value: '0', label: 'Acertos' },
-  { value: '0', label: 'Sequência' },
-  { value: '0%', label: 'Precisão' },
-];
 
 const modes = [
   {
@@ -31,6 +25,14 @@ const modes = [
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { stats, accuracy } = useGameStore();
+
+  const statCards = [
+    { value: String(stats.matches), label: 'Partidas' },
+    { value: String(stats.correct), label: 'Acertos' },
+    { value: String(stats.streak),  label: 'Sequência' },
+    { value: `${accuracy}%`,        label: 'Precisão' },
+  ];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -43,9 +45,9 @@ export default function HomeScreen() {
         <Text style={styles.heroSub}>Você conhece os grandes da história?</Text>
       </View>
 
-      {/* Stats */}
+      {/* Stats reais */}
       <View style={styles.statsGrid}>
-        {stats.map((s) => (
+        {statCards.map((s) => (
           <View key={s.label} style={styles.statCard}>
             <Text style={styles.statValue}>{s.value}</Text>
             <Text style={styles.statLabel}>{s.label}</Text>
@@ -81,52 +83,36 @@ const styles = StyleSheet.create({
   content: { padding: 16, paddingBottom: 32 },
 
   hero: {
-    backgroundColor: Colors.dark,
-    borderRadius: 16,
-    padding: 28,
-    alignItems: 'center',
-    marginBottom: 12,
+    backgroundColor: Colors.dark, borderRadius: 16,
+    padding: 28, alignItems: 'center', marginBottom: 12,
   },
   heroIcon: {
-    width: 64, height: 64,
-    backgroundColor: Colors.primary,
-    borderRadius: 18,
-    alignItems: 'center', justifyContent: 'center',
-    marginBottom: 12,
+    width: 64, height: 64, backgroundColor: Colors.primary,
+    borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginBottom: 12,
   },
   heroTitle: { fontSize: 22, fontWeight: '500', color: '#fff', marginBottom: 4 },
   heroSub: { fontSize: 13, color: 'rgba(255,255,255,0.5)' },
 
-  statsGrid: {
-    flexDirection: 'row', flexWrap: 'wrap',
-    gap: 8, marginBottom: 12,
-  },
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
   statCard: {
     flex: 1, minWidth: '45%',
     backgroundColor: Colors.backgroundSecondary,
-    borderRadius: 12, padding: 12,
-    alignItems: 'center',
+    borderRadius: 12, padding: 12, alignItems: 'center',
   },
   statValue: { fontSize: 22, fontWeight: '500', color: Colors.textPrimary },
   statLabel: { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
 
   sectionLabel: {
-    fontSize: 11, fontWeight: '500',
-    color: Colors.textSecondary,
-    letterSpacing: 0.5,
-    marginBottom: 8, marginTop: 4,
+    fontSize: 11, fontWeight: '500', color: Colors.textSecondary,
+    letterSpacing: 0.5, marginBottom: 8, marginTop: 4,
   },
   modeBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 14,
     backgroundColor: Colors.background,
     borderWidth: 0.5, borderColor: Colors.border,
-    borderRadius: 16, padding: 14,
-    marginBottom: 8,
+    borderRadius: 16, padding: 14, marginBottom: 8,
   },
-  modeIcon: {
-    width: 42, height: 42, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
-  },
+  modeIcon: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   modeText: { flex: 1 },
   modeName: { fontSize: 15, fontWeight: '500', color: Colors.textPrimary },
   modeDesc: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },

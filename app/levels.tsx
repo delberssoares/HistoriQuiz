@@ -1,18 +1,19 @@
 import { Colors } from '@/constants/theme';
+import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const levels = [
-  { number: 1, name: 'Iniciante',     difficulty: 'Fácil',   diffStyle: 'easy', stars: 0, locked: false },
-  { number: 2, name: 'Aprendiz',      difficulty: 'Fácil',   diffStyle: 'easy', stars: 0, locked: false },
-  { number: 3, name: 'Intermediário', difficulty: 'Médio',   diffStyle: 'med',  stars: 0, locked: false },
-  { number: 4, name: 'Avançado',      difficulty: 'Médio',   diffStyle: 'med',  stars: 0, locked: true  },
-  { number: 5, name: 'Expert',        difficulty: 'Difícil', diffStyle: 'hard', stars: 0, locked: true  },
-  { number: 6, name: 'Mestre',        difficulty: 'Difícil', diffStyle: 'hard', stars: 0, locked: true  },
-  { number: 7, name: 'Lendário',      difficulty: 'Extremo', diffStyle: 'xtr',  stars: 0, locked: true  },
-  { number: 8, name: 'Imortal',       difficulty: 'Extremo', diffStyle: 'xtr',  stars: 0, locked: true  },
+const LEVELS = [
+  { number: 1, name: 'Iniciante',     difficulty: 'Fácil',   diffStyle: 'easy', locked: false },
+  { number: 2, name: 'Aprendiz',      difficulty: 'Fácil',   diffStyle: 'easy', locked: false },
+  { number: 3, name: 'Intermediário', difficulty: 'Médio',   diffStyle: 'med',  locked: false },
+  { number: 4, name: 'Avançado',      difficulty: 'Médio',   diffStyle: 'med',  locked: true  },
+  { number: 5, name: 'Expert',        difficulty: 'Difícil', diffStyle: 'hard', locked: true  },
+  { number: 6, name: 'Mestre',        difficulty: 'Difícil', diffStyle: 'hard', locked: true  },
+  { number: 7, name: 'Lendário',      difficulty: 'Extremo', diffStyle: 'xtr',  locked: true  },
+  { number: 8, name: 'Imortal',       difficulty: 'Extremo', diffStyle: 'xtr',  locked: true  },
 ];
 
 const diffColors: Record<string, { bg: string; text: string }> = {
@@ -35,6 +36,7 @@ const modeBadge: Record<string, { bg: string; text: string }> = {
 export default function LevelsScreen() {
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode: string }>();
+  const { getLevelStars } = useGameStore();
 
   const badge = modeBadge[mode] ?? modeBadge.multiple;
 
@@ -55,8 +57,9 @@ export default function LevelsScreen() {
 
       {/* Grid */}
       <ScrollView contentContainerStyle={styles.grid}>
-        {levels.map((lvl) => {
+        {LEVELS.map((lvl) => {
           const diff = diffColors[lvl.diffStyle];
+          const stars = getLevelStars(mode ?? 'multiple', lvl.number);
           return (
             <TouchableOpacity
               key={lvl.number}
@@ -74,7 +77,7 @@ export default function LevelsScreen() {
               <Text style={styles.stars}>
                 {lvl.locked
                   ? '🔒'
-                  : [1, 2, 3].map((i) => (i <= lvl.stars ? '★' : '☆')).join('')}
+                  : [1, 2, 3].map((i) => (i <= stars ? '★' : '☆')).join('')}
               </Text>
             </TouchableOpacity>
           );
@@ -93,8 +96,7 @@ const styles = StyleSheet.create({
   },
   backBtn: {
     width: 34, height: 34,
-    borderWidth: 0.5, borderColor: Colors.border,
-    borderRadius: 10,
+    borderWidth: 0.5, borderColor: Colors.border, borderRadius: 10,
     alignItems: 'center', justifyContent: 'center',
     backgroundColor: Colors.background,
   },
@@ -107,15 +109,13 @@ const styles = StyleSheet.create({
     width: '47.5%',
     backgroundColor: Colors.background,
     borderWidth: 0.5, borderColor: Colors.border,
-    borderRadius: 16, padding: 14,
-    position: 'relative',
+    borderRadius: 16, padding: 14, position: 'relative',
   },
   cardLocked: { opacity: 0.4 },
 
   diffBadge: {
     position: 'absolute', top: 10, right: 10,
-    paddingHorizontal: 7, paddingVertical: 2,
-    borderRadius: 10,
+    paddingHorizontal: 7, paddingVertical: 2, borderRadius: 10,
   },
   diffText: { fontSize: 10, fontWeight: '500' },
 

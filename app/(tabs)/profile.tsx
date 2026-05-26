@@ -1,15 +1,34 @@
 import { Colors } from '@/constants/theme';
+import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-const achievements = [
-  { icon: 'trophy-outline',     label: 'Primeira vitória',    done: false },
-  { icon: 'flame-outline',      label: 'Sequência de 5',      done: false },
-  { icon: 'star-outline',       label: '3 estrelas em nível', done: false },
-  { icon: 'flash-outline',      label: 'Resposta rápida',     done: false },
-];
-
 export default function ProfileScreen() {
+  const { stats, accuracy } = useGameStore();
+
+  const achievements = [
+    {
+      icon: 'trophy-outline',
+      label: 'Primeira vitória',
+      done: stats.matches >= 1,
+    },
+    {
+      icon: 'flame-outline',
+      label: 'Sequência de 5',
+      done: stats.maxStreak >= 5,
+    },
+    {
+      icon: 'star-outline',
+      label: '10 acertos',
+      done: stats.correct >= 10,
+    },
+    {
+      icon: 'flash-outline',
+      label: '5 partidas',
+      done: stats.matches >= 5,
+    },
+  ];
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       {/* Avatar */}
@@ -18,15 +37,17 @@ export default function ProfileScreen() {
           <Ionicons name="person" size={40} color={Colors.primaryLight} />
         </View>
         <Text style={styles.name}>Jogador</Text>
-        <Text style={styles.sub}>Nível 1 · Iniciante</Text>
+        <Text style={styles.sub}>
+          {stats.matches === 0 ? 'Nenhuma partida ainda' : `${stats.matches} partida${stats.matches > 1 ? 's' : ''} jogada${stats.matches > 1 ? 's' : ''}`}
+        </Text>
       </View>
 
       {/* Stats */}
       <View style={styles.statsRow}>
         {[
-          { value: '0', label: 'Partidas' },
-          { value: '0', label: 'Acertos' },
-          { value: '0%', label: 'Precisão' },
+          { value: String(stats.matches),  label: 'Partidas' },
+          { value: String(stats.correct),  label: 'Acertos' },
+          { value: `${accuracy}%`,         label: 'Precisão' },
         ].map((s) => (
           <View key={s.label} style={styles.statCard}>
             <Text style={styles.statValue}>{s.value}</Text>
@@ -34,6 +55,16 @@ export default function ProfileScreen() {
           </View>
         ))}
       </View>
+
+      {/* Maior sequência */}
+      {stats.maxStreak > 0 && (
+        <View style={styles.streakBanner}>
+          <Ionicons name="flame" size={20} color="#854F0B" />
+          <Text style={styles.streakText}>
+            Maior sequência: <Text style={{ fontWeight: '600' }}>{stats.maxStreak}</Text> acertos seguidos
+          </Text>
+        </View>
+      )}
 
       {/* Conquistas */}
       <Text style={styles.sectionLabel}>CONQUISTAS</Text>
@@ -64,19 +95,24 @@ const styles = StyleSheet.create({
   avatar: {
     width: 80, height: 80, borderRadius: 24,
     backgroundColor: Colors.primary,
-    alignItems: 'center', justifyContent: 'center',
-    marginBottom: 12,
+    alignItems: 'center', justifyContent: 'center', marginBottom: 12,
   },
   name: { fontSize: 20, fontWeight: '500', color: Colors.textPrimary },
   sub:  { fontSize: 13, color: Colors.textSecondary, marginTop: 4 },
 
-  statsRow: { flexDirection: 'row', gap: 8, marginBottom: 24 },
+  statsRow: { flexDirection: 'row', gap: 8, marginBottom: 16 },
   statCard: {
     flex: 1, backgroundColor: Colors.backgroundSecondary,
     borderRadius: 12, padding: 12, alignItems: 'center',
   },
   statValue: { fontSize: 20, fontWeight: '500', color: Colors.textPrimary },
   statLabel: { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
+
+  streakBanner: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: '#FAEEDA', borderRadius: 12, padding: 12, marginBottom: 20,
+  },
+  streakText: { fontSize: 13, color: '#854F0B' },
 
   sectionLabel: {
     fontSize: 11, fontWeight: '500', color: Colors.textSecondary,
