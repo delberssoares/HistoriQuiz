@@ -879,11 +879,17 @@ const LEVEL_TIMER: Record<number, number> = {
   9: 12, 10: 10,
 };
 
+// ─── Embaralha um array sem modificar o original ─────────────────────────────
+function shuffle<T>(arr: T[]): T[] {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
 // ─── Perguntas fixas por nível, sem repetição ────────────────────────────────
 function getQuestionsForLevel(levelNum: number): Question[] {
   return ALL_QUESTIONS
     .filter((q) => q.level === levelNum)
-    .sort(() => Math.random() - 0.5);
+    .sort(() => Math.random() - 0.5)
+    .map((q) => ({ ...q, options: shuffle(q.options) })); // embaralha as opções de cada pergunta
 }
 
 const LETTERS = ['A', 'B', 'C', 'D'];
