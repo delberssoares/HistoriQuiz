@@ -1,19 +1,21 @@
 import { Colors } from '@/constants/theme';
 import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 const LEVELS = [
-  { number: 1, name: 'Iniciante',     difficulty: 'Fácil',   diffStyle: 'easy' },
-  { number: 2, name: 'Aprendiz',      difficulty: 'Fácil',   diffStyle: 'easy' },
-  { number: 3, name: 'Intermediário', difficulty: 'Médio',   diffStyle: 'med'  },
-  { number: 4, name: 'Avançado',      difficulty: 'Médio',   diffStyle: 'med'  },
-  { number: 5, name: 'Expert',        difficulty: 'Difícil', diffStyle: 'hard' },
-  { number: 6, name: 'Mestre',        difficulty: 'Difícil', diffStyle: 'hard' },
-  { number: 7, name: 'Lendário',      difficulty: 'Extremo', diffStyle: 'xtr'  },
-  { number: 8, name: 'Imortal',       difficulty: 'Extremo', diffStyle: 'xtr'  },
+  { number: 1,  name: 'Iniciante',     difficulty: 'Fácil',        diffStyle: 'easy' },
+  { number: 2,  name: 'Aprendiz',      difficulty: 'Fácil',        diffStyle: 'easy' },
+  { number: 3,  name: 'Intermediário', difficulty: 'Fácil',        diffStyle: 'easy' },
+  { number: 4,  name: 'Avançado',      difficulty: 'Médio',        diffStyle: 'med'  },
+  { number: 5,  name: 'Expert',        difficulty: 'Médio',        diffStyle: 'med'  },
+  { number: 6,  name: 'Mestre',        difficulty: 'Difícil',      diffStyle: 'hard' },
+  { number: 7,  name: 'Lendário',      difficulty: 'Difícil',      diffStyle: 'hard' },
+  { number: 8,  name: 'Imortal',       difficulty: 'Difícil',      diffStyle: 'hard' },
+  { number: 9,  name: 'Mítico',        difficulty: 'Extremo',      diffStyle: 'xtr'  },
+  { number: 10, name: 'Absoluto',      difficulty: 'Extremo',      diffStyle: 'xtr'  },
 ];
 
 // Níveis 1-3 sempre liberados; a partir do 4, precisa de ≥1 estrela no anterior
@@ -21,23 +23,29 @@ const ALWAYS_UNLOCKED = 3;
 
 const diffColors: Record<string, { bg: string; text: string }> = {
   easy: { bg: '#EAF3DE', text: '#3B6D11' },
-  med:  { bg: '#FAEEDA', text: '#854F0B' },
+  med: { bg: '#FAEEDA', text: '#854F0B' },
   hard: { bg: '#FAECE7', text: '#993C1D' },
-  xtr:  { bg: '#FCEBEB', text: '#A32D2D' },
+  xtr: { bg: '#FCEBEB', text: '#A32D2D' },
 };
 
 const modeLabel: Record<string, string> = { multiple: 'Com opções', free: 'Sem opções' };
 const modeBadge: Record<string, { bg: string; text: string }> = {
   multiple: { bg: Colors.primaryLight, text: '#3C3489' },
-  free:     { bg: '#E1F5EE',           text: '#085041' },
+  free: { bg: '#E1F5EE', text: '#085041' },
 };
 
 export default function LevelsScreen() {
   const router = useRouter();
   const { mode } = useLocalSearchParams<{ mode: string }>();
-  const { getLevelStars } = useGameStore();
+  const { getLevelStars, reload } = useGameStore(); // ✏️ adicionar reload
 
   const badge = modeBadge[mode] ?? modeBadge.multiple;
+
+  useFocusEffect(
+    useCallback(() => {
+      reload();
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -100,6 +108,6 @@ const styles = StyleSheet.create({
   diffBadge: { position: 'absolute', top: 10, right: 10, paddingHorizontal: 7, paddingVertical: 2, borderRadius: 10 },
   diffText: { fontSize: 10, fontWeight: '500' },
   lvlNumber: { fontSize: 26, fontWeight: '500', color: Colors.textPrimary },
-  lvlName:   { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
-  stars:     { fontSize: 13, marginTop: 6, letterSpacing: 1, color: Colors.primary },
+  lvlName: { fontSize: 11, color: Colors.textSecondary, marginTop: 2 },
+  stars: { fontSize: 13, marginTop: 6, letterSpacing: 1, color: Colors.primary },
 });

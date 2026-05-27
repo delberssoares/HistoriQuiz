@@ -12,9 +12,9 @@ const STATS_KEY = 'hq_stats_v1';
 const STARS_KEY = 'hq_stars_v1';
 const DEFAULT_STATS: GameStats = { matches: 0, correct: 0, streak: 0, maxStreak: 0 };
 
-let _stats: GameStats = DEFAULT_STATS;
+let _stats: GameStats = { ...DEFAULT_STATS };
 let _starsMap: Record<string, number> = {};
-let _listeners: Array<() => void> = [];
+let _listeners: Set<() => void> = new Set();
 
 function notify() { _listeners.forEach((fn) => fn()); }
 
@@ -24,7 +24,7 @@ async function loadFromStorage() {
       AsyncStorage.getItem(STATS_KEY),
       AsyncStorage.getItem(STARS_KEY),
     ]);
-    if (rawStats) _stats = JSON.parse(rawStats);
+    if (rawStats) _stats = { ...DEFAULT_STATS, ...JSON.parse(rawStats) };
     if (rawStars) _starsMap = JSON.parse(rawStars);
     notify();
   } catch (_) {}
@@ -33,15 +33,19 @@ async function loadFromStorage() {
 loadFromStorage();
 
 export function useGameStore() {
-  const [, rerender] = useState(0);
+  // ✏️ Guarda um snapshot dos dados no state do componente
+  // Assim qualquer notify() causa re-render com valores frescos
+  const [snapshot, setSnapshot] = useState({ stats: _stats, starsMap: _starsMap });
 
   useEffect(() => {
-    const fn = () => rerender((n) => n + 1);
-    _listeners.push(fn);
-    return () => { _listeners = _listeners.filter((l) => l !== fn); };
+    const fn = () => setSnapshot({ stats: _stats, starsMap: _starsMap }); // ✏️ copia referência atual
+    _listeners.add(fn);
+    return () => { _listeners.delete(fn); };
   }, []);
 
-  const reload = useCallback(() => { loadFromStorage(); }, []);
+  const reload = useCallback(async () => {
+    await loadFromStorage();
+  }, []);
 
   const saveResult = useCallback(
     async (correctCount: number, totalCount: number, mode: string, level: string) => {
@@ -49,11 +53,11 @@ export function useGameStore() {
       const newStars = pct >= 0.9 ? 3 : pct >= 0.6 ? 2 : pct > 0 ? 1 : 0;
 
       const allCorrect = correctCount === totalCount;
-      const newStreak = allCorrect ? _stats.streak + 1 : 0;
+      const newStreak = _stats.streak + (allCorrect ? 1 : 0); // ✏️ corrigido: streak só sobe se acertou tudo
       _stats = {
         matches: _stats.matches + 1,
         correct: _stats.correct + correctCount,
-        streak: newStreak,
+        streak: allCorrect ? newStreak : 0,
         maxStreak: Math.max(_stats.maxStreak, newStreak),
       };
       await AsyncStorage.setItem(STATS_KEY, JSON.stringify(_stats)).catch(() => {});
@@ -71,15 +75,17 @@ export function useGameStore() {
     [],
   );
 
+  // ✏️ Lê do snapshot (state local), não direto do módulo global
   const getLevelStars = useCallback(
-    (mode: string, level: number) => _starsMap[`${mode}-${level}`] ?? 0,
-    [],
+    (mode: string, level: number) => snapshot.starsMap[`${mode}-${level}`] ?? 0,
+    [snapshot.starsMap], // ✏️ depende do snapshot — atualiza junto com o re-render
   );
 
   const accuracy =
-    _stats.matches > 0
-      ? Math.round((_stats.correct / (_stats.matches * 5)) * 100)
+    snapshot.stats.matches > 0
+      ? Math.round((snapshot.stats.correct / (snapshot.stats.matches * 5)) * 100)
       : 0;
 
-  return { stats: _stats, accuracy, getLevelStars, saveResult, reload };
+  // ✏️ Retorna dados do snapshot, não das variáveis globais diretas
+  return { stats: snapshot.stats, accuracy, getLevelStars, saveResult, reload };
 }
