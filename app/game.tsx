@@ -1,9 +1,11 @@
 import { Colors } from '@/constants/theme';
 import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
+  Animated, Easing,
   Image,
   Keyboard, ScrollView, StyleSheet, Text,
   TextInput, TouchableOpacity, View,
@@ -32,7 +34,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 1, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Pelé',
-    image: require('@/assets/images/people/pele.webp'),
+    image: require('@/assets/images/people/nivel1/pele.webp'),
     aliases: ['pelé', 'pele', 'edson', 'arantes'],
     options: ['Pelé', 'Zico', 'Ronaldo', 'Romário'],
     hint: 'Considerado o maior jogador de futebol de todos os tempos',
@@ -41,7 +43,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 2, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Ayrton Senna',
-    image: require('@/assets/images/people/ayrton.webp'),
+    image: require('@/assets/images/people/nivel1/ayrton.webp'),
     aliases: ['ayrton', 'senna'],
     options: ['Ayrton Senna', 'Alain Prost', 'Michael Schumacher', 'Nelson Piquet'],
     hint: 'Tricampeão mundial de Fórmula 1, ídolo brasileiro',
@@ -50,7 +52,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 3, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Michael Jackson',
-    image: require('@/assets/images/people/michael.webp'),
+    image: require('@/assets/images/people/nivel1/michael.webp'),
     aliases: ['michael', 'jackson'],
     options: ['Michael Jackson', 'Prince', 'David Bowie', 'Elvis Presley'],
     hint: 'Rei do Pop',
@@ -59,7 +61,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 4, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Cristiano Ronaldo',
-    image: require('@/assets/images/people/cr7.webp'),
+    image: require('@/assets/images/people/nivel1/cr7.webp'),
     aliases: ['cristiano', 'ronaldo', 'cr7'],
     options: ['Cristiano Ronaldo', 'Lionel Messi', 'Neymar', 'Mbappé'],
     hint: 'Conhecido como CR7, um dos maiores goleadores da história',
@@ -68,7 +70,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 5, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Lionel Messi',
-    image: require('@/assets/images/people/messi.webp'),
+    image: require('@/assets/images/people/nivel1/messi.webp'),
     aliases: ['lionel', 'messi', 'leo messi'],
     options: ['Lionel Messi', 'Cristiano Ronaldo', 'Neymar', 'Ronaldinho'],
     hint: 'Campeão mundial com a Argentina em 2022, La Pulga',
@@ -77,7 +79,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 6, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Elvis Presley',
-    image: require('@/assets/images/people/elvis.webp'),
+    image: require('@/assets/images/people/nivel1/elvis.webp'),
     aliases: ['elvis', 'presley'],
     options: ['Elvis Presley', 'Chuck Berry', 'Jerry Lee Lewis', 'Buddy Holly'],
     hint: 'Rei do Rock and Roll',
@@ -86,7 +88,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 7, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Albert Einstein',
-    image: require('@/assets/images/people/albert.webp'),
+    image: require('@/assets/images/people/nivel1/albert.webp'),
     aliases: ['albert', 'einstein'],
     options: ['Albert Einstein', 'Isaac Newton', 'Nikola Tesla', 'Charles Darwin'],
     hint: 'Físico criador da teoria da relatividade',
@@ -95,7 +97,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 8, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Neymar',
-    image: require('@/assets/images/people/neymar.webp'),
+    image: require('@/assets/images/people/nivel1/neymar.webp'),
     aliases: ['neymar', 'ney'],
     options: ['Neymar', 'Pelé', 'Ronaldinho', 'Kaká'],
     hint: 'Atacante brasileiro, ex-Barcelona e PSG',
@@ -104,7 +106,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 9, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Muhammad Ali',
-    image: require('@/assets/images/people/muhammadali.webp'),
+    image: require('@/assets/images/people/nivel1/muhammadali.webp'),
     aliases: ['muhammad', 'ali', 'cassius clay'],
     options: ['Muhammad Ali', 'Mike Tyson', 'Joe Frazier', 'George Foreman'],
     hint: 'O maior boxeador de todos os tempos, "The Greatest"',
@@ -113,7 +115,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 10, level: 1, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Usain Bolt',
-    image: require('@/assets/images/people/usainbolt.webp'),
+    image: require('@/assets/images/people/nivel1/usainbolt.webp'),
     aliases: ['usain', 'bolt'],
     options: ['Usain Bolt', 'Carl Lewis', 'Maurice Greene', 'Asafa Powell'],
     hint: 'Jamaicano, homem mais rápido da história',
@@ -124,6 +126,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 11, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Elon Musk',
+    image: require('@/assets/images/people/nivel2/musk.webp'),
     aliases: ['elon', 'musk'],
     options: ['Elon Musk', 'Bill Gates', 'Jeff Bezos', 'Mark Zuckerberg'],
     hint: 'Fundador da Tesla e SpaceX, um dos homens mais ricos do mundo',
@@ -132,6 +135,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 12, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Bill Gates',
+    image: require('@/assets/images/people/nivel2/billgates.webp'),
     aliases: ['bill', 'gates'],
     options: ['Bill Gates', 'Steve Jobs', 'Elon Musk', 'Jeff Bezos'],
     hint: 'Cofundador da Microsoft',
@@ -140,6 +144,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 13, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Michael Jordan',
+    image: require('@/assets/images/people/nivel2/jordan.webp'),
     aliases: ['michael', 'jordan', 'mj'],
     options: ['Michael Jordan', 'LeBron James', 'Kobe Bryant', 'Magic Johnson'],
     hint: 'Considerado o maior jogador de basquete de todos os tempos, Air Jordan',
@@ -148,6 +153,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 14, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'LeBron James',
+    image: require('@/assets/images/people/nivel2/lebron.webp'),
     aliases: ['lebron', 'james', 'king james'],
     options: ['LeBron James', 'Michael Jordan', 'Kobe Bryant', 'Shaquille O\'Neal'],
     hint: 'King James, um dos maiores da NBA',
@@ -156,6 +162,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 15, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Napoleão Bonaparte',
+    image: require('@/assets/images/people/nivel2/napoleao.webp'),
     aliases: ['napoleão', 'napoleao', 'bonaparte'],
     options: ['Napoleão Bonaparte', 'Júlio César', 'Alexandre o Grande', 'Genghis Khan'],
     hint: 'Imperador francês que conquistou boa parte da Europa',
@@ -164,6 +171,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 16, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Adolf Hitler',
+    image: require('@/assets/images/people/nivel2/hitler.webp'),
     aliases: ['adolf', 'hitler'],
     options: ['Adolf Hitler', 'Joseph Stalin', 'Benito Mussolini', 'Francisco Franco'],
     hint: 'Ditador alemão responsável pela Segunda Guerra Mundial e pelo Holocausto',
@@ -172,6 +180,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 17, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Bob Marley',
+    image: require('@/assets/images/people/nivel2/bobmarley.webp'),
     aliases: ['bob', 'marley'],
     options: ['Bob Marley', 'Jimmy Cliff', 'Peter Tosh', 'Burning Spear'],
     hint: 'Ícone do reggae jamaicano',
@@ -180,6 +189,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 18, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Marilyn Monroe',
+    image: require('@/assets/images/people/nivel2/marilynmonroe.webp'),
     aliases: ['marilyn', 'monroe'],
     options: ['Marilyn Monroe', 'Audrey Hepburn', 'Grace Kelly', 'Elizabeth Taylor'],
     hint: 'Ícone pop e sex symbol dos anos 50 e 60',
@@ -188,6 +198,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 19, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Freddie Mercury',
+    image: require('@/assets/images/people/nivel2/freddiemercury.webp'),
     aliases: ['freddie', 'mercury'],
     options: ['Freddie Mercury', 'David Bowie', 'Mick Jagger', 'Robert Plant'],
     hint: 'Vocalista do Queen, um dos maiores frontmen da história do rock',
@@ -196,6 +207,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 20, level: 2, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'John Lennon',
+    image: require('@/assets/images/people/nivel2/johnlennon.webp'),
     aliases: ['john', 'lennon'],
     options: ['John Lennon', 'Paul McCartney', 'George Harrison', 'Ringo Starr'],
     hint: 'Cofundador dos Beatles, autor de Imagine',
@@ -206,6 +218,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 21, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Donald Trump',
+    image: require('@/assets/images/people/nivel3/donaldtrump.webp'),
     aliases: ['donald', 'trump'],
     options: ['Donald Trump', 'Barack Obama', 'Joe Biden', 'George Bush'],
     hint: '45º e 47º presidente dos Estados Unidos',
@@ -214,6 +227,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 22, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Barack Obama',
+    image: require('@/assets/images/people/nivel3/obama.webp'),
     aliases: ['barack', 'obama'],
     options: ['Barack Obama', 'Donald Trump', 'Bill Clinton', 'Joe Biden'],
     hint: 'Primeiro presidente negro dos Estados Unidos',
@@ -222,6 +236,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 23, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Leonardo da Vinci',
+    image: require('@/assets/images/people/nivel3/davinci.webp'),
     aliases: ['leonardo', 'da vinci', 'davinci'],
     options: ['Leonardo da Vinci', 'Michelangelo', 'Rafael', 'Donatello'],
     hint: 'Pintou a Mona Lisa e era também inventor',
@@ -230,6 +245,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 24, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Marie Curie',
+    image: require('@/assets/images/people/nivel3/marie.webp'),
     aliases: ['marie', 'curie'],
     options: ['Marie Curie', 'Florence Nightingale', 'Ada Lovelace', 'Rosalind Franklin'],
     hint: 'Única pessoa a ganhar Nobel em duas ciências diferentes',
@@ -238,6 +254,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 25, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Mahatma Gandhi',
+    image: require('@/assets/images/people/nivel3/gandhi.webp'),
     aliases: ['mahatma', 'gandhi'],
     options: ['Mahatma Gandhi', 'Nelson Mandela', 'Martin Luther King', 'Dalai Lama'],
     hint: 'Liderou a independência da Índia pela não-violência',
@@ -246,6 +263,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 26, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Nelson Mandela',
+    image: require('@/assets/images/people/nivel3/mandela.webp'),
     aliases: ['nelson', 'mandela'],
     options: ['Nelson Mandela', 'Mahatma Gandhi', 'Desmond Tutu', 'Steve Biko'],
     hint: 'Primeiro presidente negro da África do Sul',
@@ -254,6 +272,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 27, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Walt Disney',
+    image: require('@/assets/images/people/nivel3/disney.webp'),
     aliases: ['walt', 'disney'],
     options: ['Walt Disney', 'Steven Spielberg', 'Charlie Chaplin', 'George Lucas'],
     hint: 'Criador do Mickey Mouse e fundador da Disney',
@@ -262,6 +281,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 28, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Charles Chaplin',
+    image: require('@/assets/images/people/nivel3/chaplin.webp'),
     aliases: ['charles', 'chaplin', 'charlie chaplin'],
     options: ['Charles Chaplin', 'Buster Keaton', 'Harold Lloyd', 'Stan Laurel'],
     hint: 'Ator e diretor, ícone do cinema mudo com o personagem Carlitos',
@@ -270,6 +290,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 29, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Stephen Hawking',
+    image: require('@/assets/images/people/nivel3/stephen.webp'),
     aliases: ['stephen', 'hawking'],
     options: ['Stephen Hawking', 'Carl Sagan', 'Richard Feynman', 'Neil deGrasse Tyson'],
     hint: 'Físico teórico britânico, estudou buracos negros e o universo',
@@ -278,6 +299,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 30, level: 3, difficulty: 'easy',
     question: 'Quem é esta figura histórica?',
     answer: 'Mark Zuckerberg',
+    image: require('@/assets/images/people/nivel3/markzuckerberg.webp'),
     aliases: ['mark', 'zuckerberg', 'zuck'],
     options: ['Mark Zuckerberg', 'Elon Musk', 'Bill Gates', 'Jeff Bezos'],
     hint: 'Fundador do Facebook e Meta',
@@ -288,6 +310,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 31, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Winston Churchill',
+    image: require('@/assets/images/people/nivel4/churchill.webp'),
     aliases: ['winston', 'churchill'],
     options: ['Winston Churchill', 'Franklin Roosevelt', 'Charles de Gaulle', 'Harry Truman'],
     hint: 'Primeiro-ministro britânico que liderou o Reino Unido na Segunda Guerra',
@@ -296,6 +319,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 32, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Karl Marx',
+    image: require('@/assets/images/people/nivel4/karlmarx.webp'),
     aliases: ['karl', 'marx'],
     options: ['Karl Marx', 'Friedrich Engels', 'Vladimir Lenin', 'Leon Trotsky'],
     hint: 'Filósofo alemão, autor do Manifesto Comunista',
@@ -304,6 +328,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 33, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Sigmund Freud',
+    image: require('@/assets/images/people/nivel4/sigmundfreud.webp'),
     aliases: ['sigmund', 'freud'],
     options: ['Sigmund Freud', 'Carl Jung', 'Alfred Adler', 'William James'],
     hint: 'Fundador da psicanálise',
@@ -312,6 +337,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 34, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Nikola Tesla',
+    image: require('@/assets/images/people/nivel4/nikolatesla.webp'),
     aliases: ['nikola', 'tesla'],
     options: ['Nikola Tesla', 'Thomas Edison', 'Guglielmo Marconi', 'Heinrich Hertz'],
     hint: 'Inventor sérvio-americano pioneiro da corrente alternada',
@@ -320,6 +346,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 35, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Isaac Newton',
+    image: require('@/assets/images/people/nivel4/isaacnewton.webp'),
     aliases: ['isaac', 'newton'],
     options: ['Isaac Newton', 'Galileu Galilei', 'Albert Einstein', 'Johannes Kepler'],
     hint: 'Formulou as leis do movimento e da gravidade universal',
@@ -328,6 +355,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 36, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Martin Luther King',
+    image: require('@/assets/images/people/nivel4/martinlutherlking.webp'),
     aliases: ['martin', 'luther', 'king', 'mlk'],
     options: ['Martin Luther King', 'Malcolm X', 'Nelson Mandela', 'Mahatma Gandhi'],
     hint: 'Líder do movimento dos direitos civis nos EUA, "I Have a Dream"',
@@ -336,6 +364,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 37, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Che Guevara',
+    image: require('@/assets/images/people/nivel4/cheguevara.webp'),
     aliases: ['che', 'guevara'],
     options: ['Che Guevara', 'Fidel Castro', 'Simón Bolívar', 'Hugo Chávez'],
     hint: 'Revolucionário argentino, ícone da esquerda mundial',
@@ -344,6 +373,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 38, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Mother Teresa',
+    image: require('@/assets/images/people/nivel4/santateresa.webp'),
     aliases: ['mother teresa', 'madre teresa', 'teresa'],
     options: ['Mother Teresa', 'Florence Nightingale', 'Malala Yousafzai', 'Simone de Beauvoir'],
     hint: 'Freira albanesa, Nobel da Paz por seu trabalho com os pobres na Índia',
@@ -352,6 +382,7 @@ const ALL_QUESTIONS: Question[] = [
     id: 39, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Mozart',
+    image: require('@/assets/images/people/nivel4/mozart.webp'),
     aliases: ['mozart', 'wolfgang', 'amadeus'],
     options: ['Mozart', 'Beethoven', 'Bach', 'Chopin'],
     hint: 'Compositor austríaco prodígio do século XVIII',
@@ -360,88 +391,100 @@ const ALL_QUESTIONS: Question[] = [
     id: 40, level: 4, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Beethoven',
+    image: require('@/assets/images/people/nivel4/beethoven.webp'),
     aliases: ['beethoven', 'ludwig'],
     options: ['Beethoven', 'Mozart', 'Bach', 'Schubert'],
     hint: 'Compôs a 9ª Sinfonia mesmo após ficar surdo',
   },
 
   // ── NÍVEL 5 ──────────────────────────────────────────────────────────────
+  // Adicione as imagens em: @/assets/images/people/nivel5/
   {
     id: 41, level: 5, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
-    answer: 'Michelangelo',
-    aliases: ['michelangelo', 'buonarroti'],
-    options: ['Michelangelo', 'Leonardo da Vinci', 'Rafael', 'Botticelli'],
-    hint: 'Pintou o teto da Capela Sistina',
-  },
-  {
-    id: 42, level: 5, difficulty: 'medium',
-    question: 'Quem é esta figura histórica?',
-    answer: 'Marco Polo',
-    aliases: ['marco', 'polo'],
-    options: ['Marco Polo', 'Cristóvão Colombo', 'Vasco da Gama', 'Fernão de Magalhães'],
-    hint: 'Explorador veneziano que viajou até a China no século XIII',
-  },
-  {
-    id: 43, level: 5, difficulty: 'medium',
-    question: 'Quem é esta figura histórica?',
-    answer: 'Cristóvão Colombo',
-    aliases: ['cristóvão', 'cristovao', 'colombo', 'columbus'],
-    options: ['Cristóvão Colombo', 'Vasco da Gama', 'Marco Polo', 'Américo Vespúcio'],
-    hint: 'Navegador que chegou à América em 1492',
-  },
-  {
-    id: 44, level: 5, difficulty: 'medium',
-    question: 'Quem é esta figura histórica?',
     answer: 'Abraham Lincoln',
+    image: require('@/assets/images/people/nivel5/lincoln.webp'),
     aliases: ['abraham', 'lincoln'],
     options: ['Abraham Lincoln', 'George Washington', 'Thomas Jefferson', 'Theodore Roosevelt'],
     hint: 'Presidente americano que aboliu a escravidão nos EUA',
   },
   {
-    id: 45, level: 5, difficulty: 'medium',
+    id: 42, level: 5, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Cleópatra',
+    image: require('@/assets/images/people/nivel5/cleopatra.webp'),
     aliases: ['cleópatra', 'cleopatra'],
     options: ['Cleópatra', 'Nefertiti', 'Hatshepsut', 'Zenobia'],
     hint: 'Última rainha do Egito faraônico',
   },
   {
-    id: 46, level: 5, difficulty: 'medium',
+    id: 43, level: 5, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Galileu Galilei',
+    image: require('@/assets/images/people/nivel5/galileu.webp'),
     aliases: ['galileu', 'galilei', 'galileo'],
     options: ['Galileu Galilei', 'Nicolau Copérnico', 'Isaac Newton', 'Johannes Kepler'],
     hint: 'Astrônomo que confirmou que a Terra gira ao redor do Sol',
   },
   {
-    id: 47, level: 5, difficulty: 'medium',
+    id: 44, level: 5, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Frida Kahlo',
+    image: require('@/assets/images/people/nivel5/fridakahlo.webp'),
     aliases: ['frida', 'kahlo'],
     options: ['Frida Kahlo', 'Georgia O\'Keeffe', 'Tamara de Lempicka', 'Berthe Morisot'],
     hint: 'Pintora mexicana famosa pelos autorretratos',
   },
   {
-    id: 48, level: 5, difficulty: 'medium',
+    id: 45, level: 5, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Charles Darwin',
+    image: require('@/assets/images/people/nivel5/darwin.webp'),
     aliases: ['charles', 'darwin'],
     options: ['Charles Darwin', 'Gregor Mendel', 'Louis Pasteur', 'Alexander Fleming'],
     hint: 'Propôs a teoria da evolução das espécies',
   },
   {
-    id: 49, level: 5, difficulty: 'medium',
+    id: 46, level: 5, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Júlio César',
+    image: require('@/assets/images/people/nivel5/juliocesar.webp'),
     aliases: ['júlio', 'julio', 'césar', 'cesar', 'julius caesar'],
     options: ['Júlio César', 'Marco Aurélio', 'Augusto César', 'Nero'],
     hint: 'General e ditador romano, "Vim, vi e venci"',
   },
   {
+    id: 47, level: 5, difficulty: 'medium',
+    question: 'Quem é esta figura histórica?',
+    answer: 'Joana d\'Arc',
+    image: require('@/assets/images/people/nivel5/joanadearc.webp'),
+    aliases: ['joana', 'joana d\'arc', 'joan of arc'],
+    options: ['Joana d\'Arc', 'Isabel I', 'Maria Antonieta', 'Cleópatra'],
+    hint: 'Heroína francesa da Guerra dos Cem Anos, canonizada como santa',
+  },
+  {
+    id: 48, level: 5, difficulty: 'medium',
+    question: 'Quem é esta figura histórica?',
+    answer: 'Genghis Khan',
+    image: require('@/assets/images/people/nivel5/genghiskhan.webp'),
+    aliases: ['genghis', 'khan', 'gengis'],
+    options: ['Genghis Khan', 'Kublai Khan', 'Átila', 'Tamerlão'],
+    hint: 'Fundador do maior império contínuo da história, o Império Mongol',
+  },
+  {
+    id: 49, level: 5, difficulty: 'medium',
+    question: 'Quem é esta figura histórica?',
+    answer: 'Alan Turing',
+    image: require('@/assets/images/people/nivel5/alanturing.webp'),
+    aliases: ['alan', 'turing'],
+    options: ['Alan Turing', 'Ada Lovelace', 'John von Neumann', 'Claude Shannon'],
+    hint: 'Matemático britânico considerado o pai da computação moderna',
+  },
+  {
     id: 50, level: 5, difficulty: 'medium',
     question: 'Quem é esta figura histórica?',
     answer: 'Marco Aurélio',
+    image: require('@/assets/images/people/nivel5/marcoaurelio.webp'),
     aliases: ['marco', 'aurélio', 'aurelio'],
     options: ['Marco Aurélio', 'Júlio César', 'Augusto César', 'Constantino'],
     hint: 'Imperador filósofo romano, autor das Meditações',
@@ -451,410 +494,460 @@ const ALL_QUESTIONS: Question[] = [
   {
     id: 51, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Simón Bolívar',
-    aliases: ['simón', 'simon', 'bolívar', 'bolivar'],
-    options: ['Simón Bolívar', 'José de San Martín', 'Francisco de Miranda', 'Antonio Sucre'],
-    hint: 'Libertador de vários países da América do Sul',
+    answer: 'Mao Tsé-Tung',
+    image: require('@/assets/images/people/nivel6/mao.webp'),
+    aliases: ['mao', 'tsé-tung', 'mao tse tung', 'mao zedong'],
+    options: ['Mao Tsé-Tung', 'Ho Chi Minh', 'Kim Il-sung', 'Deng Xiaoping'],
+    hint: 'Fundador da República Popular da China em 1949',
   },
   {
     id: 52, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Sun Tzu',
-    aliases: ['sun', 'tzu', 'sun tzu'],
-    options: ['Sun Tzu', 'Confúcio', 'Lao-Tsé', 'Zhuge Liang'],
-    hint: 'Estrategista e filósofo chinês, autor de A Arte da Guerra',
+    answer: 'Joseph Stalin',
+    image: require('@/assets/images/people/nivel6/stalin.webp'),
+    aliases: ['joseph', 'stalin'],
+    options: ['Joseph Stalin', 'Vladimir Lenin', 'Leon Trotsky', 'Nikita Khrushchev'],
+    hint: 'Ditador soviético que liderou a URSS por quase três décadas',
   },
   {
     id: 53, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Florence Nightingale',
-    aliases: ['florence', 'nightingale'],
-    options: ['Florence Nightingale', 'Clara Barton', 'Edith Cavell', 'Mary Seacole'],
-    hint: 'Fundadora da enfermagem moderna',
+    answer: 'Franklin Roosevelt',
+    image: require('@/assets/images/people/nivel6/roosevelt.webp'),
+    aliases: ['franklin', 'roosevelt', 'fdr'],
+    options: ['Franklin Roosevelt', 'Harry Truman', 'Woodrow Wilson', 'Dwight Eisenhower'],
+    hint: 'Presidente americano que conduziu os EUA pela Grande Depressão e a Segunda Guerra',
   },
   {
     id: 54, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Ada Lovelace',
-    aliases: ['ada', 'lovelace'],
-    options: ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Charles Babbage'],
-    hint: 'Considerada a primeira programadora da história',
+    answer: 'Steve Jobs',
+    image: require('@/assets/images/people/nivel6/stevejobs.webp'),
+    aliases: ['steve', 'jobs'],
+    options: ['Steve Jobs', 'Bill Gates', 'Elon Musk', 'Jeff Bezos'],
+    hint: 'Cofundador da Apple e visionário da tecnologia pessoal',
   },
   {
     id: 55, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Harriet Tubman',
-    aliases: ['harriet', 'tubman'],
-    options: ['Harriet Tubman', 'Sojourner Truth', 'Frederick Douglass', 'Rosa Parks'],
-    hint: 'Libertou dezenas de escravizados pela Ferrovia Subterrânea',
+    answer: 'Ronaldinho Gaúcho',
+    image: require('@/assets/images/people/nivel6/ronaldinho.webp'),
+    aliases: ['ronaldinho', 'gaúcho', 'ronaldinho gaucho'],
+    options: ['Ronaldinho Gaúcho', 'Kaká', 'Rivaldo', 'Roberto Carlos'],
+    hint: 'Craque brasileiro eleito melhor do mundo duas vezes, ídolo do Barcelona',
   },
   {
     id: 56, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Vlad III',
-    aliases: ['vlad', 'empalador', 'drácula', 'dracula'],
-    options: ['Vlad III', 'Ivan o Terrível', 'Henrique VIII', 'Ricardo III'],
-    hint: 'Príncipe da Valáquia que inspirou o mito do Drácula',
+    answer: 'Vladimir Lenin',
+    image: require('@/assets/images/people/nivel6/lenin.webp'),
+    aliases: ['vladimir', 'lenin'],
+    options: ['Vladimir Lenin', 'Joseph Stalin', 'Leon Trotsky', 'Karl Marx'],
+    hint: 'Líder da Revolução Russa de 1917 e fundador da União Soviética',
   },
   {
     id: 57, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Nicolau Copérnico',
-    aliases: ['copérnico', 'copernico', 'nicolau', 'copernicus'],
-    options: ['Nicolau Copérnico', 'Galileu Galilei', 'Tycho Brahe', 'Johannes Kepler'],
-    hint: 'Astrônomo que propôs que a Terra gira ao redor do Sol',
+    answer: 'Nelson Piquet',
+    image: require('@/assets/images/people/nivel6/piquet.webp'),
+    aliases: ['nelson', 'piquet'],
+    options: ['Nelson Piquet', 'Emerson Fittipaldi', 'Rubens Barrichello', 'Felipe Massa'],
+    hint: 'Tricampeão mundial de Fórmula 1 pelo Brasil',
   },
   {
     id: 58, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Johannes Gutenberg',
-    aliases: ['gutenberg', 'johannes'],
-    options: ['Johannes Gutenberg', 'Johann Sebastian Bach', 'Martin Lutero', 'Erasmo de Roterdã'],
-    hint: 'Inventor da prensa de tipos móveis no século XV',
+    answer: 'Benito Mussolini',
+    image: require('@/assets/images/people/nivel6/mussolini.webp'),
+    aliases: ['benito', 'mussolini'],
+    options: ['Benito Mussolini', 'Francisco Franco', 'António de Oliveira Salazar', 'Ante Pavelić'],
+    hint: 'Ditador italiano e fundador do fascismo, aliado de Hitler na Segunda Guerra',
   },
   {
     id: 59, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Alexandre o Grande',
-    aliases: ['alexandre', 'alexander', 'magno'],
-    options: ['Alexandre o Grande', 'Júlio César', 'Napoleão Bonaparte', 'Genghis Khan'],
-    hint: 'Rei macedônio que criou um dos maiores impérios da Antiguidade',
+    answer: 'Pablo Picasso',
+    image: require('@/assets/images/people/nivel6/picasso.webp'),
+    aliases: ['pablo', 'picasso'],
+    options: ['Pablo Picasso', 'Salvador Dalí', 'Henri Matisse', 'Marcel Duchamp'],
+    hint: 'Pintor espanhol criador do cubismo, um dos maiores artistas do século XX',
   },
   {
     id: 60, level: 6, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Átila',
-    aliases: ['átila', 'atila', 'huno'],
-    options: ['Átila', 'Genghis Khan', 'Tamerlão', 'Alarico'],
-    hint: 'Rei dos Hunos, temido como "o Flagelo de Deus"',
+    answer: 'Diana Spencer',
+    image: require('@/assets/images/people/nivel6/diana.webp'),
+    aliases: ['diana', 'lady di', 'princesa diana'],
+    options: ['Diana Spencer', 'Rainha Elizabeth II', 'Kate Middleton', 'Grace Kelly'],
+    hint: 'Princesa de Gales, "Lady Di", ícone pop da realeza britânica',
   },
 
   // ── NÍVEL 7 ──────────────────────────────────────────────────────────────
   {
     id: 61, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Saladino',
-    aliases: ['saladino', 'saladin'],
-    options: ['Saladino', 'Ricardo Coração de Leão', 'Suleimão o Magnífico', 'Tamerlão'],
-    hint: 'Sultão curdo que reconquistou Jerusalém dos Cruzados',
+    answer: 'Fidel Castro',
+    image: require('@/assets/images/people/nivel7/fidel.webp'),
+    aliases: ['fidel', 'castro'],
+    options: ['Fidel Castro', 'Hugo Chávez', 'Augusto Pinochet', 'Daniel Ortega'],
+    hint: 'Líder da Revolução Cubana e governante de Cuba por décadas',
   },
   {
     id: 62, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Espartaco',
-    aliases: ['espartaco', 'spartacus'],
-    options: ['Espartaco', 'Júlio César', 'Aníbal', 'Vercingetórix'],
-    hint: 'Gladiador trácio que liderou uma grande revolta de escravos em Roma',
+    answer: 'Neil Armstrong',
+    image: require('@/assets/images/people/nivel7/armstrong.webp'),
+    aliases: ['neil', 'armstrong'],
+    options: ['Neil Armstrong', 'Buzz Aldrin', 'Yuri Gagarin', 'John Glenn'],
+    hint: 'Primeiro ser humano a pisar na Lua, em julho de 1969',
   },
   {
     id: 63, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Nostradamus',
-    aliases: ['nostradamus', 'michel de nostredame'],
-    options: ['Nostradamus', 'Rasputin', 'Merlim', 'Leonardo da Vinci'],
-    hint: 'Médico e astrólogo francês do século XVI, famoso por suas profecias',
+    answer: 'Yuri Gagarin',
+    image: require('@/assets/images/people/nivel7/gagarin.webp'),
+    aliases: ['yuri', 'gagarin'],
+    options: ['Yuri Gagarin', 'Neil Armstrong', 'Alan Shepard', 'Valentina Tereshkova'],
+    hint: 'Primeiro ser humano a viajar ao espaço, em abril de 1961',
   },
   {
     id: 64, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Mansa Musa',
-    aliases: ['mansa', 'musa'],
-    options: ['Mansa Musa', 'Sundiata Keita', 'Shaka Zulu', 'Haile Selassie'],
-    hint: 'Imperador do Mali, considerado o homem mais rico da história',
+    answer: 'Mikhail Gorbachev',
+    image: require('@/assets/images/people/nivel7/gorbachev.webp'),
+    aliases: ['mikhail', 'gorbachev', 'gorbatchev'],
+    options: ['Mikhail Gorbachev', 'Boris Yeltsin', 'Vladimir Putin', 'Nikita Khrushchev'],
+    hint: 'Último líder da União Soviética, promoveu a glasnost e a perestroika',
   },
   {
     id: 65, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Tamerlão',
-    aliases: ['tamerlão', 'tamerlan', 'timur'],
-    options: ['Tamerlão', 'Genghis Khan', 'Átila', 'Saladino'],
-    hint: 'Conquistador turco-mongol do século XIV, fundou o Império Timúrida',
+    answer: 'Malcolm X',
+    image: require('@/assets/images/people/nivel7/malcolmx.webp'),
+    aliases: ['malcolm', 'malcolm x'],
+    options: ['Malcolm X', 'Fred Hampton', 'Marcus Garvey', 'Stokely Carmichael'],
+    hint: 'Líder afro-americano e porta-voz da Nação do Islã nos anos 1960',
   },
   {
     id: 66, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Hildegarda de Bingen',
-    aliases: ['hildegarda', 'hildegard', 'bingen'],
-    options: ['Hildegarda de Bingen', 'Joana d\'Arc', 'Catarina de Siena', 'Teresa de Ávila'],
-    hint: 'Abadessa alemã do século XII, mística, compositora e cientista',
+    answer: 'Malala Yousafzai',
+    image: require('@/assets/images/people/nivel7/malala.webp'),
+    aliases: ['malala', 'yousafzai'],
+    options: ['Malala Yousafzai', 'Greta Thunberg', 'Aung San Suu Kyi', 'Shirin Ebadi'],
+    hint: 'Jovem paquistanesa, Nobel da Paz por defender a educação das meninas',
   },
   {
     id: 67, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Hipatia de Alexandria',
-    aliases: ['hipatia', 'hypatia'],
-    options: ['Hipatia de Alexandria', 'Aspásia', 'Marie Curie', 'Ada Lovelace'],
-    hint: 'Matemática e filósofa grega do século IV d.C.',
+    answer: 'Jeff Bezos',
+    image: require('@/assets/images/people/nivel7/bezos.webp'),
+    aliases: ['jeff', 'bezos'],
+    options: ['Jeff Bezos', 'Larry Page', 'Sergey Brin', 'Jack Ma'],
+    hint: 'Fundador da Amazon, uma das maiores empresas do mundo',
   },
   {
     id: 68, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Ibn Battuta',
-    aliases: ['ibn', 'battuta'],
-    options: ['Ibn Battuta', 'Marco Polo', 'Zheng He', 'Vasco da Gama'],
-    hint: 'Explorador marroquino do século XIV, viajou mais que qualquer pessoa de sua época',
+    answer: 'Vladimir Putin',
+    image: require('@/assets/images/people/nivel7/putin.webp'),
+    aliases: ['vladimir', 'putin'],
+    options: ['Vladimir Putin', 'Boris Yeltsin', 'Dmitri Medvedev', 'Alexander Lukashenko'],
+    hint: 'Presidente da Rússia, ex-agente da KGB, no poder desde 1999',
   },
   {
     id: 69, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Suleimão o Magnífico',
-    aliases: ['suleimão', 'suleiman', 'solimão'],
-    options: ['Suleimão o Magnífico', 'Saladino', 'Mehmed II', 'Harun al-Rashid'],
-    hint: 'Sultão otomano no auge do Império no século XVI',
+    answer: 'Getúlio Vargas',
+    image: require('@/assets/images/people/nivel7/getulio.webp'),
+    aliases: ['getúlio', 'getulio', 'vargas'],
+    options: ['Getúlio Vargas', 'Juscelino Kubitschek', 'João Goulart', 'Castello Branco'],
+    hint: 'Presidente brasileiro que criou a CLT e a Petrobras, chamado de "pai dos pobres"',
   },
   {
     id: 70, level: 7, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Zheng He',
-    aliases: ['zheng', 'zheng he', 'cheng ho'],
-    options: ['Zheng He', 'Kublai Khan', 'Marco Polo', 'Ibn Battuta'],
-    hint: 'Almirante chinês que liderou grandes expedições marítimas no século XV',
+    answer: 'Amelia Earhart',
+    image: require('@/assets/images/people/nivel7/amelia.webp'),
+    aliases: ['amelia', 'earhart'],
+    options: ['Amelia Earhart', 'Bessie Coleman', 'Sally Ride', 'Harriet Quimby'],
+    hint: 'Primeira mulher a cruzar o Atlântico em voo solo, desapareceu em 1937',
   },
 
   // ── NÍVEL 8 ──────────────────────────────────────────────────────────────
   {
     id: 71, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Hatshepsut',
-    aliases: ['hatshepsut', 'hatchepsut'],
-    options: ['Hatshepsut', 'Cleópatra', 'Nefertiti', 'Zenobia'],
-    hint: 'Faraó feminina do Antigo Egito, uma das mais poderosas da história',
+    answer: 'Rosa Parks',
+    image: require('@/assets/images/people/nivel8/rosaparks.webp'),
+    aliases: ['rosa', 'parks'],
+    options: ['Rosa Parks', 'Coretta Scott King', 'Ida B. Wells', 'Angela Davis'],
+    hint: 'Costureira americana que recusou ceder seu assento em 1955, símbolo dos direitos civis',
   },
   {
     id: 72, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Ashoka',
-    aliases: ['ashoka', 'asoka'],
-    options: ['Ashoka', 'Chandragupta', 'Akbar', 'Aurangzeb'],
-    hint: 'Imperador indiano que adotou o budismo após uma guerra devastadora',
+    answer: 'Valentina Tereshkova',
+    image: require('@/assets/images/people/nivel8/tereshkova.webp'),
+    aliases: ['valentina', 'tereshkova'],
+    options: ['Valentina Tereshkova', 'Sally Ride', 'Svetlana Savitskaya', 'Mae Jemison'],
+    hint: 'Primeira mulher a viajar ao espaço, em junho de 1963',
   },
   {
     id: 73, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Zenobia',
-    aliases: ['zenobia', 'zenóbia'],
-    options: ['Zenobia', 'Cleópatra', 'Boudiceia', 'Tamara da Geórgia'],
-    hint: 'Rainha de Palmira que desafiou o Império Romano no século III',
+    answer: 'Henry Ford',
+    image: require('@/assets/images/people/nivel8/henryford.webp'),
+    aliases: ['henry', 'ford'],
+    options: ['Henry Ford', 'Andrew Carnegie', 'John D. Rockefeller', 'J.P. Morgan'],
+    hint: 'Industrial americano que revolucionou a produção em massa com a linha de montagem',
   },
   {
     id: 74, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Pachacuti',
-    aliases: ['pachacuti', 'pachacutec'],
-    options: ['Pachacuti', 'Atahualpa', 'Moctezuma', 'Huayna Capac'],
-    hint: 'Imperador inca que construiu Machu Picchu',
+    answer: 'Greta Thunberg',
+    image: require('@/assets/images/people/nivel8/greta.webp'),
+    aliases: ['greta', 'thunberg'],
+    options: ['Greta Thunberg', 'Jane Goodall', 'Wangari Maathai', 'Vandana Shiva'],
+    hint: 'Jovem ativista sueca que inspirou o movimento Fridays for Future pelo clima',
   },
   {
     id: 75, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Vercingetórix',
-    aliases: ['vercingetórix', 'vercingetorix'],
-    options: ['Vercingetórix', 'Espartaco', 'Átila', 'Armínio'],
-    hint: 'Chefe gaulês que liderou a resistência contra Júlio César',
+    answer: 'Jair Bolsonaro',
+    image: require('@/assets/images/people/nivel8/bolsonaro.webp'),
+    aliases: ['bolsonaro', 'jair', 'jair bolsonaro'],
+    options: ['Jair Bolsonaro', 'Lula', 'Fernando Henrique Cardoso', 'Getúlio Vargas'],
+    hint: 'Ex-capitão do Exército, foi o 38º presidente do Brasil entre 2019 e 2022',
   },
   {
     id: 76, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Ramanujan',
-    aliases: ['ramanujan', 'srinivasa'],
-    options: ['Ramanujan', 'Brahmagupta', 'Aryabhata', 'Al-Khwarizmi'],
-    hint: 'Matemático indiano autodidata do início do século XX',
+    answer: 'Lula',
+    image: require('@/assets/images/people/nivel8/lula.webp'),
+    aliases: ['lula', 'luiz inácio', 'lula da silva'],
+    options: ['Lula', 'Fernando Henrique Cardoso', 'Dilma Rousseff', 'Michel Temer'],
+    hint: 'Presidente do Brasil eleito três vezes, ex-operário metalúrgico e sindicalista',
   },
   {
     id: 77, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Thomas Edison',
-    aliases: ['thomas', 'edison'],
-    options: ['Thomas Edison', 'Nikola Tesla', 'Alexander Graham Bell', 'Guglielmo Marconi'],
-    hint: 'Inventor americano da lâmpada elétrica e do fonógrafo',
+    answer: 'Robert Oppenheimer',
+    image: require('@/assets/images/people/nivel8/oppenheimer.webp'),
+    aliases: ['robert', 'oppenheimer', 'j. robert oppenheimer'],
+    options: ['Robert Oppenheimer', 'Enrico Fermi', 'Edward Teller', 'Niels Bohr'],
+    hint: 'Físico americano chamado de "pai da bomba atômica", liderou o Projeto Manhattan',
   },
   {
     id: 78, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Nicolau Maquiavel',
-    aliases: ['maquiavel', 'machiavelli', 'nicolau'],
-    options: ['Nicolau Maquiavel', 'Thomas Hobbes', 'John Locke', 'Erasmo de Roterdã'],
-    hint: 'Filósofo florentino do século XV, autor de O Príncipe',
+    answer: 'Juscelino Kubitschek',
+    image: require('@/assets/images/people/nivel8/jk.webp'),
+    aliases: ['juscelino', 'kubitschek', 'jk'],
+    options: ['Juscelino Kubitschek', 'Getúlio Vargas', 'João Goulart', 'Castello Branco'],
+    hint: 'Presidente brasileiro que construiu Brasília e prometeu "50 anos em 5"',
   },
   {
     id: 79, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Francisco de Assis',
-    aliases: ['francisco', 'assis', 'são francisco'],
-    options: ['Francisco de Assis', 'Tomás de Aquino', 'Agostinho de Hipona', 'Bernardo de Claraval'],
-    hint: 'Santo padroeiro dos animais e da ecologia, fundador dos Franciscanos',
+    answer: 'Oscar Niemeyer',
+    image: require('@/assets/images/people/nivel8/niemeyer.webp'),
+    aliases: ['oscar', 'niemeyer'],
+    options: ['Oscar Niemeyer', 'Lúcio Costa', 'Renzo Piano', 'Le Corbusier'],
+    hint: 'Arquiteto brasileiro responsável pelos principais edifícios de Brasília',
   },
   {
     id: 80, level: 8, difficulty: 'hard',
     question: 'Quem é esta figura histórica?',
-    answer: 'Averróis',
-    aliases: ['averróis', 'averrois', 'ibn rushd'],
-    options: ['Averróis', 'Avicena', 'Al-Farabi', 'Al-Ghazali'],
-    hint: 'Filósofo e médico árabe do século XII, grande comentador de Aristóteles',
+    answer: 'Frank Sinatra',
+    image: require('@/assets/images/people/nivel8/sinatra.webp'),
+    aliases: ['frank', 'sinatra', 'ol blue eyes'],
+    options: ['Frank Sinatra', 'Dean Martin', 'Sammy Davis Jr.', 'Tony Bennett'],
+    hint: '"Ol\' Blue Eyes", um dos maiores cantores americanos do século XX',
   },
 
   // ── NÍVEL 9 ──────────────────────────────────────────────────────────────
-  {
+ {
     id: 81, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Imhotep',
-    aliases: ['imhotep'],
-    options: ['Imhotep', 'Ramsés II', 'Tutancâmon', 'Amenhotep III'],
-    hint: 'Arquiteto e médico do Egito Antigo, projetou a Pirâmide de Djoser',
+    answer: 'Brad Arnold',
+    image: require('@/assets/images/people/nivel9/bradarnold.webp'),
+    aliases: ['brad', 'arnold', '3 doors down'],
+    options: ['Brad Arnold', 'Chad Kroeger', 'Scott Stapp', 'Dave Grohl'],
+    hint: 'Vocalista e baterista da banda americana 3 Doors Down, conhecida por "Kryptonite"',
   },
   {
     id: 82, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Amenhotep IV',
-    aliases: ['amenhotep', 'akhenaton', 'akhenaten'],
-    options: ['Amenhotep IV', 'Ramsés II', 'Tutancâmon', 'Hatshepsut'],
-    hint: 'Faraó egípcio que tentou impor o monoteísmo no Egito Antigo',
+    answer: 'Santos Dumont',
+    image: require('@/assets/images/people/nivel9/santosdumont.webp'),
+    aliases: ['santos dumont', 'alberto', 'dumont'],
+    options: ['Santos Dumont', 'Wright Brothers', 'Gustave Eiffel', 'Nikola Tesla'],
+    hint: 'Brasileiro considerado o pai da aviação, voou com o 14-Bis em 1906',
   },
   {
     id: 83, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Al-Khwarizmi',
-    aliases: ['al-khwarizmi', 'khwarizmi', 'algoritmi'],
-    options: ['Al-Khwarizmi', 'Averróis', 'Avicena', 'Al-Biruni'],
-    hint: 'Matemático persa do século IX, pai da álgebra',
+    answer: 'Cazuza',
+    image: require('@/assets/images/people/nivel9/cazuza.webp'),
+    aliases: ['cazuza', 'agenor de miranda'],
+    options: ['Cazuza', 'Renato Russo', 'Lobão', 'Herbert Vianna'],
+    hint: 'Cantor e poeta brasileiro do rock, vocalista do Barão Vermelho, ícone dos anos 80',
   },
   {
     id: 84, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Sundiata Keita',
-    aliases: ['sundiata', 'keita'],
-    options: ['Sundiata Keita', 'Mansa Musa', 'Shaka Zulu', 'Askia Mohammed'],
-    hint: 'Fundador do Império do Mali no século XIII',
+    answer: 'Rita Lee',
+    image: require('@/assets/images/people/nivel9/ritalee.webp'),
+    aliases: ['rita', 'lee', 'rita lee'],
+    options: ['Rita Lee', 'Elis Regina', 'Cássia Eller', 'Pitty'],
+    hint: 'Rainha do rock brasileiro, ex-integrante dos Mutantes',
   },
   {
     id: 85, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Njinga de Matamba',
-    aliases: ['njinga', 'nzinga', 'matamba'],
-    options: ['Njinga de Matamba', 'Zenobia', 'Hatshepsut', 'Amina de Zazzau'],
-    hint: 'Rainha angolana do século XVII que resistiu à colonização portuguesa',
+    answer: 'Al Pacino',
+    image: require('@/assets/images/people/nivel9/alpacino.webp'),
+    aliases: ['al pacino', 'alfredo', 'pacino'],
+    options: ['Al Pacino', 'Robert De Niro', 'Marlon Brando', 'Dustin Hoffman'],
+    hint: 'Ator americano famoso por O Poderoso Chefão e Scarface',
   },
   {
     id: 86, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Nur Jahan',
-    aliases: ['nur', 'jahan', 'nur jahan'],
-    options: ['Nur Jahan', 'Mumtaz Mahal', 'Razia Sultana', 'Mirabai'],
-    hint: 'Imperatriz mogol do século XVII, a mulher mais poderosa da Índia medieval',
+    answer: 'Morgan Freeman',
+    image: require('@/assets/images/people/nivel9/morganfreeman.webp'),
+    aliases: ['morgan', 'freeman'],
+    options: ['Morgan Freeman', 'Denzel Washington', 'Samuel L. Jackson', 'Sidney Poitier'],
+    hint: 'Ator americano de voz icônica, estrelou Um Sonho de Liberdade e Se7en',
   },
   {
     id: 87, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Yoritomo Minamoto',
-    aliases: ['yoritomo', 'minamoto'],
-    options: ['Yoritomo Minamoto', 'Oda Nobunaga', 'Toyotomi Hideyoshi', 'Tokugawa Ieyasu'],
-    hint: 'Fundador do primeiro xogunato do Japão no século XII',
+    answer: 'Tiger Woods',
+    image: require('@/assets/images/people/nivel9/tigerwoods.webp'),
+    aliases: ['tiger', 'woods', 'tiger woods'],
+    options: ['Tiger Woods', 'Jack Nicklaus', 'Phil Mickelson', 'Rory McIlroy'],
+    hint: 'Golfista americano considerado o maior de todos os tempos, com 15 títulos de Grand Slam',
   },
   {
     id: 88, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Pacal o Grande',
-    aliases: ['pacal', 'pakal'],
-    options: ['Pacal o Grande', 'Pachacuti', 'Moctezuma', 'Quetzalcoatl'],
-    hint: 'Rei maia de Palenque no século VII, seu sarcófago é famoso mundialmente',
+    answer: 'MrBeast',
+    image: require('@/assets/images/people/nivel9/mrbeast.webp'),
+    aliases: ['mrbeast', 'mr beast', 'jimmy donaldson', 'james donaldson'],
+    options: ['MrBeast', 'PewDiePie', 'Logan Paul', 'KSI'],
+    hint: 'Youtuber americano mais seguido do mundo, famoso por desafios milionários e filantropia',
   },
   {
     id: 89, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Skanderbeg',
-    aliases: ['skanderbeg', 'skenderbeu'],
-    options: ['Skanderbeg', 'Vlad III', 'Stefan o Grande', 'Hunyadi'],
-    hint: 'Herói nacional albanês que resistiu ao Império Otomano no século XV',
+    answer: 'Alexander Fleming',
+    image: require('@/assets/images/people/nivel9/fleming.webp'),
+    aliases: ['alexander', 'fleming'],
+    options: ['Alexander Fleming', 'Louis Pasteur', 'Robert Koch', 'Joseph Lister'],
+    hint: 'Médico escocês que descobriu a penicilina em 1928, salvando milhões de vidas',
   },
   {
     id: 90, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Enheduanna',
-    aliases: ['enheduanna', 'en-hedu-ana'],
-    options: ['Enheduanna', 'Nefertiti', 'Hatshepsut', 'Semiramis'],
-    hint: 'Sacerdotisa suméria do século XXIII a.C., primeira autora conhecida da história',
+    answer: 'John F. Kennedy',
+    image: require('@/assets/images/people/nivel9/jfk.webp'),
+    aliases: ['john', 'kennedy', 'jfk', 'john kennedy'],
+    options: ['John F. Kennedy', 'Richard Nixon', 'Lyndon Johnson', 'Dwight Eisenhower'],
+    hint: '35º presidente dos EUA, assassinado em Dallas em 1963',
   },
 
   // ── NÍVEL 10 ─────────────────────────────────────────────────────────────
-  {
+ {
     id: 91, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Sargão de Acade',
-    aliases: ['sargão', 'sargao', 'sargon', 'acade'],
-    options: ['Sargão de Acade', 'Hamurabi', 'Nabucodonosor', 'Ciro o Grande'],
-    hint: 'Fundador do primeiro império da história, na Mesopotâmia',
+    answer: 'Renato Russo',
+    image: require('@/assets/images/people/nivel10/renatorusso.webp'),
+    aliases: ['renato', 'russo', 'renato russo'],
+    options: ['Renato Russo', 'Cazuza', 'Lobão', 'Raul Seixas'],
+    hint: 'Vocalista e compositor da Legião Urbana, um dos maiores ícones do rock brasileiro',
   },
   {
     id: 92, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Zhang Heng',
-    aliases: ['zhang', 'heng', 'zhang heng'],
-    options: ['Zhang Heng', 'Confúcio', 'Sun Tzu', 'Zhuge Liang'],
-    hint: 'Polímata chinês do século II que inventou o primeiro sismógrafo da história',
+    answer: 'Antônio Fagundes',
+    image: require('@/assets/images/people/nivel10/fagundes.webp'),
+    aliases: ['antônio', 'antonio', 'fagundes'],
+    options: ['Antônio Fagundes', 'Tony Ramos', 'Lima Duarte', 'Tarcísio Meira'],
+    hint: 'Um dos atores mais premiados da televisão e do cinema brasileiro',
   },
   {
     id: 93, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Al-Biruni',
-    aliases: ['al-biruni', 'biruni'],
-    options: ['Al-Biruni', 'Al-Khwarizmi', 'Avicena', 'Ibn Battuta'],
-    hint: 'Cientista persa do século XI, pioneiro na antropologia e na geodésia',
+    answer: 'Eduardo Saverin',
+    image: require('@/assets/images/people/nivel10/saverin.webp'),
+    aliases: ['eduardo', 'saverin', 'eduardo saverin'],
+    options: ['Eduardo Saverin', 'Mark Zuckerberg', 'Sean Parker', 'Dustin Moskovitz'],
+    hint: 'Cofundador brasileiro do Facebook, sua história foi retratada no filme "A Rede Social"',
   },
   {
     id: 94, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Ibn Khaldun',
-    aliases: ['ibn khaldun', 'khaldun'],
-    options: ['Ibn Khaldun', 'Ibn Battuta', 'Averróis', 'Al-Farabi'],
-    hint: 'Historiador e filósofo árabe do século XIV, pai da sociologia',
+    answer: 'Luiza Helena Trajano',
+    image: require('@/assets/images/people/nivel10/luizatrajano.webp'),
+    aliases: ['luiza', 'trajano', 'luiza helena'],
+    options: ['Luiza Helena Trajano', 'Cristina Junqueira', 'Nizan Guanaes', 'Abílio Diniz'],
+    hint: 'Presidente do conselho do Magazine Luiza, uma das empresárias mais influentes do Brasil',
   },
   {
     id: 95, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Prithviraj Chauhan',
-    aliases: ['prithviraj', 'chauhan'],
-    options: ['Prithviraj Chauhan', 'Ashoka', 'Chandragupta', 'Akbar'],
-    hint: 'Último grande rei hindu de Delhi, derrotado por Muhammad de Ghor em 1192',
+    answer: 'Cristina Junqueira',
+    image: require('@/assets/images/people/nivel10/cristinajunqueira.webp'),
+    aliases: ['cristina', 'junqueira'],
+    options: ['Cristina Junqueira', 'Luiza Helena Trajano', 'Leila Pereira', 'Alessandra Orofino'],
+    hint: 'Cofundadora do Nubank, um dos maiores bancos digitais do mundo',
   },
   {
     id: 96, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Xuanzang',
-    aliases: ['xuanzang', 'hsuan-tsang', 'tripitaka'],
-    options: ['Xuanzang', 'Zheng He', 'Confúcio', 'Bodhidharma'],
-    hint: 'Monge budista chinês do século VII que viajou à Índia em busca de escrituras sagradas',
+    answer: 'Larry Page',
+    image: require('@/assets/images/people/nivel10/larrypage.webp'),
+    aliases: ['larry', 'page'],
+    options: ['Larry Page', 'Sergey Brin', 'Jeff Bezos', 'Eric Schmidt'],
+    hint: 'Cofundador do Google junto com Sergey Brin',
   },
   {
     id: 97, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Al-Idrisi',
-    aliases: ['al-idrisi', 'idrisi'],
-    options: ['Al-Idrisi', 'Ibn Battuta', 'Al-Biruni', 'Al-Khwarizmi'],
-    hint: 'Geógrafo árabe do século XII que produziu o mapa-múndi mais preciso da Idade Média',
+    answer: 'Jensen Huang',
+    image: require('@/assets/images/people/nivel10/jensenhuang.webp'),
+    aliases: ['jensen', 'huang'],
+    options: ['Jensen Huang', 'Lisa Su', 'Pat Gelsinger', 'Sundar Pichai'],
+    hint: 'Fundador e CEO da NVIDIA, empresa que domina o mercado de chips de inteligência artificial',
   },
   {
     id: 98, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Nagarjuna',
-    aliases: ['nagarjuna'],
-    options: ['Nagarjuna', 'Ashoka', 'Bodhidharma', 'Xuanzang'],
-    hint: 'Filósofo budista indiano do século II, fundador da escola Madhyamaka',
+    answer: 'Michael Phelps',
+    image: require('@/assets/images/people/nivel10/michaelphelps.webp'),
+    aliases: ['michael', 'phelps'],
+    options: ['Michael Phelps', 'Mark Spitz', 'Ryan Lochte', 'Ian Thorpe'],
+    hint: 'Nadador americano com 23 ouros olímpicos, o maior medalhista da história dos Jogos',
   },
   {
     id: 99, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Boécio',
-    aliases: ['boécio', 'boecio', 'boethius'],
-    options: ['Boécio', 'Agostinho de Hipona', 'Tomás de Aquino', 'Anselmo de Cantuária'],
-    hint: 'Filósofo romano do século VI, escreveu A Consolação da Filosofia na prisão',
+    answer: 'Carlos Alberto Torres',
+    image: require('@/assets/images/people/nivel10/carlosalberto.webp'),
+    aliases: ['carlos alberto', 'capita', 'carlos alberto torres'],
+    options: ['Carlos Alberto Torres', 'Tostão', 'Gérson', 'Clodoaldo'],
+    hint: 'Capitão da Seleção Brasileira tri-campeã em 1970, marcou um dos gols mais bonitos da história',
   },
-  {
+{
     id: 100, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
-    answer: 'Snorri Sturluson',
-    aliases: ['snorri', 'sturluson'],
-    options: ['Snorri Sturluson', 'Erik o Vermelho', 'Leif Erikson', 'Ragnar Lothbrok'],
-    hint: 'Escritor islandês do século XIII que registrou a mitologia nórdica na Edda',
+    answer: 'Garrincha',
+    image: require('@/assets/images/people/nivel10/garrincha.webp'),
+    aliases: ['garrincha', 'manuel francisco', 'alegria do povo'],
+    options: ['Garrincha', 'Didi', 'Vavá', 'Zagallo'],
+    hint: 'Perna torta e drible desconcertante, foi bi-campeão mundial com o Brasil em 1958 e 1962',
   },
 ];
 
@@ -879,7 +972,7 @@ const LEVEL_TIMER: Record<number, number> = {
   9: 12, 10: 10,
 };
 
-// ─── Embaralha um array sem modificar o original ─────────────────────────────
+// ─── Embaralha array sem modificar o original ────────────────────────────────
 function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
@@ -889,7 +982,7 @@ function getQuestionsForLevel(levelNum: number): Question[] {
   return ALL_QUESTIONS
     .filter((q) => q.level === levelNum)
     .sort(() => Math.random() - 0.5)
-    .map((q) => ({ ...q, options: shuffle(q.options) })); // embaralha as opções de cada pergunta
+    .map((q) => ({ ...q, options: shuffle(q.options) }));
 }
 
 const LETTERS = ['A', 'B', 'C', 'D'];
@@ -916,7 +1009,16 @@ export default function GameScreen() {
   const [results, setResults] = useState<RoundResult[]>([]);
   const [earnedStars, setEarnedStars] = useState(0);
   const [attempts, setAttempts] = useState(0); // 0 = primeira vez, 1 = segunda tentativa
+  const [hintVisible, setHintVisible] = useState(false);
+  const [hintUnlocked, setHintUnlocked] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Animações por opção (A, B, C, D)
+  const shakeAnims = useRef([0, 1, 2, 3].map(() => new Animated.Value(0))).current;
+  const pulseAnims = useRef([0, 1, 2, 3].map(() => new Animated.Value(1))).current;
+  // Animação fade-in do botão de dica
+  const hintFadeAnim = useRef(new Animated.Value(0)).current;
 
   const question = questions[index];
   const totalQ = questions.length;
@@ -926,6 +1028,27 @@ export default function GameScreen() {
   function stopTimer() {
     if (timerRef.current) clearInterval(timerRef.current);
   }
+
+  function stopHintTimer() {
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+  }
+
+  // Desbloqueia o botão de dica após 5 segundos de jogo
+  useEffect(() => {
+    if (phase !== 'playing') return;
+    setHintVisible(false);
+    setHintUnlocked(false);
+    hintFadeAnim.setValue(0);
+    hintTimerRef.current = setTimeout(() => {
+      setHintUnlocked(true);
+      Animated.timing(hintFadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+    }, 5000);
+    return stopHintTimer;
+  }, [index, phase]);
 
   useEffect(() => {
     if (phase !== 'playing') return;
@@ -940,7 +1063,32 @@ export default function GameScreen() {
     return stopTimer;
   }, [index, phase]);
 
-  function handleTimeout() { setTimedOut(true); setPhase('feedback'); }
+  function handleTimeout() {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    setTimedOut(true);
+    setPhase('feedback');
+  }
+
+  // Shake na opção errada (índice no array de options)
+  function triggerShake(optIndex: number) {
+    shakeAnims[optIndex].setValue(0);
+    Animated.sequence([
+      Animated.timing(shakeAnims[optIndex], { toValue: 8, duration: 50, useNativeDriver: true, easing: Easing.linear }),
+      Animated.timing(shakeAnims[optIndex], { toValue: -8, duration: 50, useNativeDriver: true, easing: Easing.linear }),
+      Animated.timing(shakeAnims[optIndex], { toValue: 6, duration: 50, useNativeDriver: true, easing: Easing.linear }),
+      Animated.timing(shakeAnims[optIndex], { toValue: -6, duration: 50, useNativeDriver: true, easing: Easing.linear }),
+      Animated.timing(shakeAnims[optIndex], { toValue: 0, duration: 40, useNativeDriver: true, easing: Easing.linear }),
+    ]).start();
+  }
+
+  // Pulse na opção correta
+  function triggerPulse(optIndex: number) {
+    pulseAnims[optIndex].setValue(1);
+    Animated.sequence([
+      Animated.timing(pulseAnims[optIndex], { toValue: 1.04, duration: 120, useNativeDriver: true }),
+      Animated.timing(pulseAnims[optIndex], { toValue: 1, duration: 120, useNativeDriver: true }),
+    ]).start();
+  }
 
   function checkFreeAnswer(val: string): boolean {
     const lower = val.toLowerCase().trim();
@@ -949,9 +1097,26 @@ export default function GameScreen() {
 
   function pickOption(opt: string) {
     if (phase !== 'playing') return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelected((prev) => prev === opt ? null : opt); // toggle: toca de novo para desmarcar
+  }
+
+  function confirmOption() {
+    if (!selected || phase !== 'playing') return;
     stopTimer();
-    setSelected(opt);
-    setResults((r) => [...r, { correct: opt === question.answer }]);
+    stopHintTimer();
+    const correct = selected === question.answer;
+    const optIndex = question.options.indexOf(selected);
+    const correctIndex = question.options.indexOf(question.answer);
+    if (correct) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (optIndex >= 0) triggerPulse(optIndex);
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      if (optIndex >= 0) triggerShake(optIndex);
+      if (correctIndex >= 0) triggerPulse(correctIndex);
+    }
+    setResults((r) => [...r, { correct }]);
     setPhase('feedback');
   }
 
@@ -963,13 +1128,20 @@ export default function GameScreen() {
 
     if (!correct && attempts === 0) {
       // Primeira tentativa errada → dá outra chance
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setAttempts(1);
       setTextAnswer('');
       return;
     }
 
     // Segunda tentativa ou acerto → segue o fluxo normal
+    if (correct) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
     stopTimer();
+    stopHintTimer();
     setResults((r) => [...r, { correct }]);
     setPhase('feedback');
   }
@@ -987,7 +1159,11 @@ export default function GameScreen() {
     setSelected(null);
     setOptsVisible(true);
     setTextAnswer('');
-    setAttempts(0); // ← adicione esta linha
+    setAttempts(0);
+    setHintVisible(false);
+    setHintUnlocked(false);
+    shakeAnims.forEach((a) => a.setValue(0));
+    pulseAnims.forEach((a) => a.setValue(1));
     setPhase('playing');
   }
 
@@ -1117,6 +1293,27 @@ export default function GameScreen() {
 
         <Text style={styles.questionText}>{question.question}</Text>
 
+        {/* BOTÃO DE DICA — aparece após 5s, disponível em todos os modos */}
+        {hintUnlocked && phase === 'playing' && (
+          <Animated.View style={{ opacity: hintFadeAnim }}>
+            <TouchableOpacity
+              style={styles.hintBtn}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setHintVisible((v) => !v);
+              }}
+            >
+              <Ionicons name="bulb-outline" size={16} color="#B07D10" />
+              <Text style={styles.hintBtnText}>{hintVisible ? 'Ocultar dica' : 'Ver dica'}</Text>
+            </TouchableOpacity>
+            {hintVisible && (
+              <View style={styles.hintBox}>
+                <Text style={styles.hintBoxText}>{question.hint}</Text>
+              </View>
+            )}
+          </Animated.View>
+        )}
+
         {/* MODO COM OPÇÕES */}
         {!isFree && (
           <>
@@ -1128,30 +1325,54 @@ export default function GameScreen() {
                   if (phase === 'feedback') {
                     if (opt === question.answer) { optStyle = styles.optCorrect; letterStyle = styles.letterCorrect; }
                     else if (opt === selected) { optStyle = styles.optWrong; letterStyle = styles.letterWrong; }
+                  } else if (phase === 'playing' && opt === selected) {
+                    optStyle = styles.optSelected;
+                    letterStyle = styles.letterSelected;
                   }
                   return (
-                    <TouchableOpacity
+                    <Animated.View
                       key={opt}
-                      style={[styles.option, optStyle]}
-                      activeOpacity={phase !== 'playing' ? 1 : 0.7}
-                      onPress={() => pickOption(opt)}
+                      style={{
+                        transform: [
+                          { translateX: shakeAnims[i] },
+                          { scale: pulseAnims[i] },
+                        ],
+                      }}
                     >
-                      <View style={[styles.optLetter, letterStyle]}>
-                        <Text style={styles.optLetterText}>{LETTERS[i]}</Text>
-                      </View>
-                      <Text style={styles.optName}>{opt}</Text>
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.option, optStyle]}
+                        activeOpacity={phase !== 'playing' ? 1 : 0.7}
+                        onPress={() => pickOption(opt)}
+                      >
+                        <View style={[styles.optLetter, letterStyle]}>
+                          <Text style={styles.optLetterText}>{LETTERS[i]}</Text>
+                        </View>
+                        <Text style={styles.optName}>{opt}</Text>
+                      </TouchableOpacity>
+                    </Animated.View>
                   );
                 })}
               </View>
             )}
             {phase === 'playing' && (
-              <TouchableOpacity style={styles.iKnowBtn} onPress={() => setOptsVisible((v) => !v)}>
-                <Ionicons name={optsVisible ? 'eye-off-outline' : 'eye-outline'} size={18} color={Colors.primaryLight} />
-                <Text style={styles.iKnowText}>
-                  {optsVisible ? 'Esconder as opções' : 'Eu sei! Mostrar opções'}
-                </Text>
-              </TouchableOpacity>
+              <>
+                <TouchableOpacity
+                  style={[styles.confirmBtn, !selected && styles.confirmBtnDisabled]}
+                  activeOpacity={selected ? 0.8 : 1}
+                  onPress={confirmOption}
+                >
+                  <Ionicons name="checkmark" size={18} color={selected ? Colors.primaryLight : Colors.textSecondary} />
+                  <Text style={[styles.confirmText, !selected && styles.confirmTextDisabled]}>
+                    Confirmar resposta
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.iKnowBtn} onPress={() => setOptsVisible((v) => !v)}>
+                  <Ionicons name={optsVisible ? 'eye-off-outline' : 'eye-outline'} size={18} color={Colors.primaryLight} />
+                  <Text style={styles.iKnowText}>
+                    {optsVisible ? 'Esconder as opções' : 'Eu sei! Mostrar opções'}
+                  </Text>
+                </TouchableOpacity>
+              </>
             )}
           </>
         )}
@@ -1247,6 +1468,8 @@ const styles = StyleSheet.create({
   questionText: { fontSize: 15, fontWeight: '500', color: Colors.textPrimary, marginBottom: 10 },
   options: { gap: 7 },
   option: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: Colors.background, borderWidth: 0.5, borderColor: Colors.border, borderRadius: 12, padding: 11 },
+  optSelected: { backgroundColor: Colors.primaryLight + '33', borderColor: Colors.primary, borderWidth: 1.5 },
+  letterSelected: { backgroundColor: Colors.primary },
   optCorrect: { backgroundColor: Colors.success, borderColor: '#C0DD97' },
   optWrong: { backgroundColor: Colors.error, borderColor: '#F7C1C1' },
   optLetter: { width: 26, height: 26, borderRadius: 8, backgroundColor: Colors.backgroundSecondary, alignItems: 'center', justifyContent: 'center' },
@@ -1259,6 +1482,8 @@ const styles = StyleSheet.create({
   textInput: { fontSize: 15, padding: 12, borderWidth: 0.5, borderColor: Colors.border, borderRadius: 12, backgroundColor: Colors.background, color: Colors.textPrimary },
   hint: { fontSize: 11, color: Colors.textSecondary, marginTop: 5 },
   confirmBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: Colors.primary, borderRadius: 12, padding: 13, marginTop: 8 },
+  confirmBtnDisabled: { backgroundColor: Colors.backgroundSecondary },
+  confirmTextDisabled: { color: Colors.textSecondary },
   confirmText: { fontSize: 15, fontWeight: '500', color: Colors.primaryLight },
   skipText: { textAlign: 'center', padding: 10, fontSize: 12, color: Colors.textSecondary },
   feedback: { marginTop: 10, padding: 14, borderRadius: 16 },
@@ -1283,6 +1508,36 @@ const styles = StyleSheet.create({
   dotRed: { backgroundColor: Colors.errorText },
   summaryQ: { flex: 1, fontSize: 13, color: Colors.textPrimary },
   summaryStatus: { fontSize: 12, fontWeight: '500' },
+  hintBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#FFF8E1',
+    borderWidth: 0.5,
+    borderColor: '#F0D080',
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 10,
+  },
+  hintBtnText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#B07D10',
+  },
+  hintBox: {
+    backgroundColor: '#FFFBEA',
+    borderWidth: 0.5,
+    borderColor: '#F0D080',
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10,
+  },
+  hintBoxText: {
+    fontSize: 13,
+    color: '#7A5800',
+    textAlign: 'center',
+  },
   retryBanner: {
     flexDirection: 'row',
     alignItems: 'center',
