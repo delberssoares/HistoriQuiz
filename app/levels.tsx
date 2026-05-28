@@ -74,7 +74,7 @@ export default function LevelsScreen() {
               style={[styles.card, locked && styles.cardLocked]}
               activeOpacity={locked ? 1 : 0.7}
               onPress={() => {
-                if (!locked) router.push(`/game?mode=${mode}&level=${lvl.number}`);
+                if (!locked) router.replace(`/game?mode=${mode}&level=${lvl.number}`);
               }}
             >
               <View style={[styles.diffBadge, { backgroundColor: diff.bg }]}>

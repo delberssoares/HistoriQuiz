@@ -767,7 +767,7 @@ const ALL_QUESTIONS: Question[] = [
   },
 
   // ── NÍVEL 9 ──────────────────────────────────────────────────────────────
- {
+  {
     id: 81, level: 9, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
     answer: 'Brad Arnold',
@@ -859,7 +859,7 @@ const ALL_QUESTIONS: Question[] = [
   },
 
   // ── NÍVEL 10 ─────────────────────────────────────────────────────────────
- {
+  {
     id: 91, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
     answer: 'Renato Russo',
@@ -940,7 +940,7 @@ const ALL_QUESTIONS: Question[] = [
     options: ['Carlos Alberto Torres', 'Tostão', 'Gérson', 'Clodoaldo'],
     hint: 'Capitão da Seleção Brasileira tri-campeã em 1970, marcou um dos gols mais bonitos da história',
   },
-{
+  {
     id: 100, level: 10, difficulty: 'extreme',
     question: 'Quem é esta figura histórica?',
     answer: 'Garrincha',
@@ -1259,7 +1259,7 @@ export default function GameScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topbar}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+        <TouchableOpacity style={styles.backBtn} onPress={() => router.replace(`/levels?mode=${mode}`)}>
           <Ionicons name="close" size={20} color={Colors.textPrimary} />
         </TouchableOpacity>
         <View style={[styles.timerPill, timerRed && styles.timerPillRed]}>
