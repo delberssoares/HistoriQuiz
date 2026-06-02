@@ -10,6 +10,7 @@ import {
   Keyboard, ScrollView, StyleSheet, Text,
   TextInput, TouchableOpacity, View,
 } from 'react-native';
+import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -989,6 +990,13 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 type Phase = 'playing' | 'feedback' | 'result';
 interface RoundResult { correct: boolean; skipped?: boolean; }
 
+// ─── AdMob ────────────────────────────────────────────────────────────────────
+const AD_UNIT_ID = __DEV__
+  ? TestIds.INTERSTITIAL
+  : 'ca-app-pub-6602652515276009/7297292275';
+
+const interstitial = InterstitialAd.createForAdRequest(AD_UNIT_ID);
+
 export default function GameScreen() {
   const router = useRouter();
   const { mode, level } = useLocalSearchParams<{ mode: string; level: string }>();
@@ -1001,6 +1009,20 @@ export default function GameScreen() {
   const [questions] = useState(() => getQuestionsForLevel(levelNum));
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('playing');
+  const [adLoaded, setAdLoaded] = useState(false);
+
+  // Carrega o anúncio ao montar a tela
+  useEffect(() => {
+    const unsubLoad = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+      setAdLoaded(true);
+    });
+    const unsubClose = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+      setAdLoaded(false);
+      interstitial.load();
+    });
+    interstitial.load();
+    return () => { unsubLoad(); unsubClose(); };
+  }, []);
   const [selected, setSelected] = useState<string | null>(null);
   const [optsVisible, setOptsVisible] = useState(true);
   const [textAnswer, setTextAnswer] = useState('');
@@ -1172,6 +1194,7 @@ export default function GameScreen() {
     const stars = await saveResult(correctCount, totalQ, mode ?? 'multiple', level ?? '1');
     setEarnedStars(stars);
     setPhase('result');
+    if (adLoaded) interstitial.show();
   }
 
   function next() {
