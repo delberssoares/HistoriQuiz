@@ -39,7 +39,12 @@
           }
         }
       ],
-      "react-native-google-mobile-ads"
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-6602652515276009~5513133394"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
