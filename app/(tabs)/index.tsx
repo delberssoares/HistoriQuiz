@@ -3,37 +3,24 @@ import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const modes = [
-  { id: 'multiple', name: 'Com opções', desc: 'Escolha entre 4 alternativas', icon: 'list-outline', iconBg: Colors.primaryLight, iconColor: Colors.primary },
-  { id: 'free', name: 'Sem opções', desc: 'Digite o nome da figura histórica', icon: 'create-outline', iconBg: '#E1F5EE', iconColor: '#0F6E56' },
+  { id: 'multiple', name: 'Com opções',  desc: 'Escolha entre 4 alternativas',       icon: 'list-outline',   iconBg: Colors.primaryLight, iconColor: Colors.primary },
+  { id: 'free',     name: 'Sem opções',  desc: 'Digite o nome da figura histórica',   icon: 'create-outline', iconBg: '#E1F5EE',           iconColor: '#0F6E56' },
 ];
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { stats, accuracy, reload, resetAll } = useGameStore();
+  const { stats, accuracy, reload } = useGameStore();
 
-
-  // Recarrega stats toda vez que a aba ganhar foco (ao voltar do jogo)
   useFocusEffect(useCallback(() => { reload(); }, [reload]));
-
-  function handleReset() {
-    Alert.alert(
-      'Reiniciar tudo?',
-      'Seu progresso, estrelas e estatísticas serão apagados permanentemente.',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Reiniciar', style: 'destructive', onPress: resetAll },
-      ]
-    );
-  }
 
   const statCards = [
     { value: String(stats.matches), label: 'Partidas' },
     { value: String(stats.correct), label: 'Acertos' },
-    { value: String(stats.streak), label: 'Sequência' },
-    { value: `${accuracy}%`, label: 'Precisão' },
+    { value: String(stats.streak),  label: 'Sequência' },
+    { value: `${accuracy}%`,        label: 'Precisão' },
   ];
 
   return (
@@ -68,11 +55,6 @@ export default function HomeScreen() {
           <Ionicons name="chevron-forward" size={18} color={Colors.textSecondary} />
         </TouchableOpacity>
       ))}
-
-      <TouchableOpacity style={styles.resetBtn} onPress={handleReset}>
-        <Ionicons name="trash-outline" size={16} color={Colors.errorText} />
-        <Text style={styles.resetText}>Reiniciar progresso</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -94,16 +76,4 @@ const styles = StyleSheet.create({
   modeText: { flex: 1 },
   modeName: { fontSize: 15, fontWeight: '500', color: Colors.textPrimary },
   modeDesc: { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
-  resetBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    marginTop: 24,
-    padding: 12,
-  },
-  resetText: {
-    fontSize: 13,
-    color: Colors.errorText,
-  },
 });
