@@ -1223,25 +1223,26 @@ export default function GameScreen() {
             ))}
           </View>
 
-          {/* ✏️ Jogar novamente — recria a tela sem empilhar */}
-          <TouchableOpacity
-            style={styles.confirmBtn}
-            onPress={() => router.replace(`/game?mode=${mode}&level=${level}`)}
-          >
-            <Ionicons name="refresh" size={18} color={Colors.primaryLight} />
-            <Text style={styles.confirmText}>Jogar novamente</Text>
-          </TouchableOpacity>
+          {/* Jogar novamente + Outros níveis lado a lado */}
+          <View style={styles.resultBtnRow}>
+            <TouchableOpacity
+              style={[styles.confirmBtn, styles.resultBtnHalf]}
+              onPress={() => router.replace(`/game?mode=${mode}&level=${level}`)}
+            >
+              <Ionicons name="refresh" size={18} color={Colors.primaryLight} />
+              <Text style={styles.confirmText}>Jogar novamente</Text>
+            </TouchableOpacity>
 
-          {/* ✏️ Outros níveis — volta para levels limpando o histórico */}
-          <TouchableOpacity
-            style={[styles.confirmBtn, { backgroundColor: Colors.dark, marginTop: 10 }]}
-            onPress={() => router.replace(`/levels?mode=${mode}`)}
-          >
-            <Ionicons name="list-outline" size={18} color={Colors.primaryLight} />
-            <Text style={styles.confirmText}>Outros níveis</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.confirmBtn, styles.resultBtnHalf, { backgroundColor: Colors.dark }]}
+              onPress={() => router.replace(`/levels?mode=${mode}`)}
+            >
+              <Ionicons name="list-outline" size={18} color={Colors.primaryLight} />
+              <Text style={styles.confirmText}>Outros níveis</Text>
+            </TouchableOpacity>
+          </View>
 
-          {/* ✏️ Botão novo: volta direto ao menu principal */}
+          {/* Menu principal centralizado abaixo */}
           <TouchableOpacity
             style={[styles.confirmBtn, { backgroundColor: Colors.backgroundSecondary, marginTop: 10 }]}
             onPress={() => router.replace('/')}
@@ -1481,6 +1482,8 @@ const styles = StyleSheet.create({
   iKnowText: { fontSize: 14, fontWeight: '500', color: Colors.primaryLight },
   textInput: { fontSize: 15, padding: 12, borderWidth: 0.5, borderColor: Colors.border, borderRadius: 12, backgroundColor: Colors.background, color: Colors.textPrimary },
   hint: { fontSize: 11, color: Colors.textSecondary, marginTop: 5 },
+  resultBtnRow: { flexDirection: 'row', gap: 10, marginTop: 8 },
+  resultBtnHalf: { flex: 1, marginTop: 0 },
   confirmBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: Colors.primary, borderRadius: 12, padding: 13, marginTop: 8 },
   confirmBtnDisabled: { backgroundColor: Colors.backgroundSecondary },
   confirmTextDisabled: { color: Colors.textSecondary },
