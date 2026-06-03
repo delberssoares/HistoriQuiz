@@ -995,8 +995,6 @@ const AD_UNIT_ID = __DEV__
   ? TestIds.INTERSTITIAL
   : 'ca-app-pub-6602652515276009/7297292275';
 
-const interstitial = InterstitialAd.createForAdRequest(AD_UNIT_ID);
-
 export default function GameScreen() {
   const router = useRouter();
   const { mode, level } = useLocalSearchParams<{ mode: string; level: string }>();
@@ -1009,20 +1007,24 @@ export default function GameScreen() {
   const [questions] = useState(() => getQuestionsForLevel(levelNum));
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('playing');
+
+   const interstitialRef = useRef(
+    InterstitialAd.createForAdRequest(AD_UNIT_ID)
+  );
   const [adLoaded, setAdLoaded] = useState(false);
 
-  // Carrega o anúncio ao montar a tela
   useEffect(() => {
-    const unsubLoad = interstitial.addAdEventListener(AdEventType.LOADED, () => {
-      setAdLoaded(true);
-    });
-    const unsubClose = interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+    const ad = interstitialRef.current;
+    const unsubLoad  = ad.addAdEventListener(AdEventType.LOADED, () => setAdLoaded(true));
+    const unsubClose = ad.addAdEventListener(AdEventType.CLOSED, () => {
       setAdLoaded(false);
-      interstitial.load();
+      ad.load();
     });
-    interstitial.load();
-    return () => { unsubLoad(); unsubClose(); };
+    const unsubError = ad.addAdEventListener(AdEventType.ERROR, () => setAdLoaded(false));
+    ad.load();
+    return () => { unsubLoad(); unsubClose(); unsubError(); };
   }, []);
+
   const [selected, setSelected] = useState<string | null>(null);
   const [optsVisible, setOptsVisible] = useState(true);
   const [textAnswer, setTextAnswer] = useState('');
@@ -1194,7 +1196,7 @@ export default function GameScreen() {
     const stars = await saveResult(correctCount, totalQ, mode ?? 'multiple', level ?? '1');
     setEarnedStars(stars);
     setPhase('result');
-    if (adLoaded) interstitial.show();
+    if (adLoaded) setTimeout(() => interstitialRef.current.show(), 800);
   }
 
   function next() {
