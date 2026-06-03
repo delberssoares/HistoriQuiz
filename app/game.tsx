@@ -1255,7 +1255,7 @@ export default function GameScreen() {
             ))}
           </View>
 
-          {/* Jogar novamente + Outros níveis lado a lado */}
+          {/* Jogar novamente + Próximo nível lado a lado */}
           <View style={styles.resultBtnRow}>
             <TouchableOpacity
               style={[styles.confirmBtn, styles.resultBtnHalf]}
@@ -1265,13 +1265,15 @@ export default function GameScreen() {
               <Text style={styles.confirmText}>Jogar novamente</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.confirmBtn, styles.resultBtnHalf, { backgroundColor: Colors.dark }]}
-              onPress={() => router.replace(`/levels?mode=${mode}`)}
-            >
-              <Ionicons name="list-outline" size={18} color={Colors.primaryLight} />
-              <Text style={styles.confirmText}>Outros níveis</Text>
-            </TouchableOpacity>
+            {levelNum < 10 && (
+              <TouchableOpacity
+                style={[styles.confirmBtn, styles.resultBtnHalf, { backgroundColor: Colors.dark }]}
+                onPress={() => router.replace(`/game?mode=${mode}&level=${levelNum + 1}`)}
+              >
+                <Ionicons name="arrow-forward" size={18} color={Colors.primaryLight} />
+                <Text style={styles.confirmText}>Próximo nível</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Menu principal centralizado abaixo */}
