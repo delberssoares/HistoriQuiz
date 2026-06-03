@@ -10,6 +10,7 @@ import {
   Keyboard, ScrollView, StyleSheet, Text,
   TextInput, TouchableOpacity, View,
 } from 'react-native';
+import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -989,6 +990,13 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 type Phase = 'playing' | 'feedback' | 'result';
 interface RoundResult { correct: boolean; skipped?: boolean; }
 
+// ─── AdMob ────────────────────────────────────────────────────────────────────
+const AD_UNIT_ID = __DEV__
+  ? TestIds.INTERSTITIAL
+  : 'ca-app-pub-6602652515276009/7297292275';
+let matchCountSinceAd = 0;
+
+
 export default function GameScreen() {
   const router = useRouter();
   const { mode, level } = useLocalSearchParams<{ mode: string; level: string }>();
@@ -1001,6 +1009,24 @@ export default function GameScreen() {
   const [questions] = useState(() => getQuestionsForLevel(levelNum));
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('playing');
+
+  const interstitialRef = useRef(
+    InterstitialAd.createForAdRequest(AD_UNIT_ID)
+  );
+  const [adLoaded, setAdLoaded] = useState(false);
+
+  useEffect(() => {
+    const ad = interstitialRef.current;
+    const unsubLoad = ad.addAdEventListener(AdEventType.LOADED, () => setAdLoaded(true));
+    const unsubClose = ad.addAdEventListener(AdEventType.CLOSED, () => {
+      setAdLoaded(false);
+      ad.load();
+    });
+    const unsubError = ad.addAdEventListener(AdEventType.ERROR, () => setAdLoaded(false));
+    ad.load();
+    return () => { unsubLoad(); unsubClose(); unsubError(); };
+  }, []);
+
   const [selected, setSelected] = useState<string | null>(null);
   const [optsVisible, setOptsVisible] = useState(true);
   const [textAnswer, setTextAnswer] = useState('');
@@ -1172,6 +1198,12 @@ export default function GameScreen() {
     const stars = await saveResult(correctCount, totalQ, mode ?? 'multiple', level ?? '1');
     setEarnedStars(stars);
     setPhase('result');
+
+    matchCountSinceAd += 1;
+    if (adLoaded && matchCountSinceAd >= 2) {
+      matchCountSinceAd = 0;
+      setTimeout(() => interstitialRef.current.show(), 800);
+    }
   }
 
   function next() {
@@ -1223,7 +1255,7 @@ export default function GameScreen() {
             ))}
           </View>
 
-          {/* Jogar novamente + Outros níveis lado a lado */}
+          {/* Jogar novamente + Próximo nível lado a lado */}
           <View style={styles.resultBtnRow}>
             <TouchableOpacity
               style={[styles.confirmBtn, styles.resultBtnHalf]}
@@ -1233,13 +1265,15 @@ export default function GameScreen() {
               <Text style={styles.confirmText}>Jogar novamente</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.confirmBtn, styles.resultBtnHalf, { backgroundColor: Colors.dark }]}
-              onPress={() => router.replace(`/levels?mode=${mode}`)}
-            >
-              <Ionicons name="list-outline" size={18} color={Colors.primaryLight} />
-              <Text style={styles.confirmText}>Outros níveis</Text>
-            </TouchableOpacity>
+            {levelNum < 10 && (
+              <TouchableOpacity
+                style={[styles.confirmBtn, styles.resultBtnHalf, { backgroundColor: Colors.dark }]}
+                onPress={() => router.replace(`/game?mode=${mode}&level=${levelNum + 1}`)}
+              >
+                <Ionicons name="arrow-forward" size={18} color={Colors.primaryLight} />
+                <Text style={styles.confirmText}>Próximo nível</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Menu principal centralizado abaixo */}

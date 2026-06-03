@@ -3,11 +3,11 @@ import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const modes = [
-  { id: 'multiple', name: 'Com opções',  desc: 'Escolha entre 4 alternativas',       icon: 'list-outline',   iconBg: Colors.primaryLight, iconColor: Colors.primary },
-  { id: 'free',     name: 'Sem opções',  desc: 'Digite o nome da figura histórica',   icon: 'create-outline', iconBg: '#E1F5EE',           iconColor: '#0F6E56' },
+  { id: 'multiple', name: 'Com opções', desc: 'Escolha entre 4 alternativas', icon: 'list-outline', iconBg: Colors.primaryLight, iconColor: Colors.primary },
+  { id: 'free', name: 'Sem opções', desc: 'Digite o nome da figura histórica', icon: 'create-outline', iconBg: '#E1F5EE', iconColor: '#0F6E56' },
 ];
 
 export default function HomeScreen() {
@@ -19,16 +19,17 @@ export default function HomeScreen() {
   const statCards = [
     { value: String(stats.matches), label: 'Partidas' },
     { value: String(stats.correct), label: 'Acertos' },
-    { value: String(stats.streak),  label: 'Sequência' },
-    { value: `${accuracy}%`,        label: 'Precisão' },
+    { value: String(stats.streak), label: 'Sequência' },
+    { value: `${accuracy}%`, label: 'Precisão' },
   ];
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.hero}>
-        <View style={styles.heroIcon}>
-          <Ionicons name="business-outline" size={32} color={Colors.primaryLight} />
-        </View>
+        <Image
+          source={require('../../assets/images/icon.png')}
+          style={styles.heroIcon}
+        />
         <Text style={styles.heroTitle}>HistóriQuiz</Text>
         <Text style={styles.heroSub}>Você conhece os grandes da história?</Text>
       </View>
