@@ -992,6 +992,7 @@ interface RoundResult { correct: boolean; skipped?: boolean; }
 
 // ─── AdMob ────────────────────────────────────────────────────────────────────
 const AD_UNIT_ID = TestIds.INTERSTITIAL;
+let matchCountSinceAd = 0;
 
 
 export default function GameScreen() {
@@ -1007,14 +1008,14 @@ export default function GameScreen() {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('playing');
 
-   const interstitialRef = useRef(
+  const interstitialRef = useRef(
     InterstitialAd.createForAdRequest(AD_UNIT_ID)
   );
   const [adLoaded, setAdLoaded] = useState(false);
 
   useEffect(() => {
     const ad = interstitialRef.current;
-    const unsubLoad  = ad.addAdEventListener(AdEventType.LOADED, () => setAdLoaded(true));
+    const unsubLoad = ad.addAdEventListener(AdEventType.LOADED, () => setAdLoaded(true));
     const unsubClose = ad.addAdEventListener(AdEventType.CLOSED, () => {
       setAdLoaded(false);
       ad.load();
@@ -1195,7 +1196,12 @@ export default function GameScreen() {
     const stars = await saveResult(correctCount, totalQ, mode ?? 'multiple', level ?? '1');
     setEarnedStars(stars);
     setPhase('result');
-    if (adLoaded) setTimeout(() => interstitialRef.current.show(), 800);
+
+    matchCountSinceAd += 1;
+    if (adLoaded && matchCountSinceAd >= 2) {
+      matchCountSinceAd = 0;
+      setTimeout(() => interstitialRef.current.show(), 800);
+    }
   }
 
   function next() {
