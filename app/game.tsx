@@ -991,9 +991,8 @@ type Phase = 'playing' | 'feedback' | 'result';
 interface RoundResult { correct: boolean; skipped?: boolean; }
 
 // ─── AdMob ────────────────────────────────────────────────────────────────────
-const AD_UNIT_ID = __DEV__
-  ? TestIds.INTERSTITIAL
-  : 'ca-app-pub-6602652515276009/7297292275';
+const AD_UNIT_ID = TestIds.INTERSTITIAL;
+
 
 export default function GameScreen() {
   const router = useRouter();
