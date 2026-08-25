@@ -1,6 +1,7 @@
 import { Colors } from '@/constants/theme';
 import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
@@ -10,9 +11,9 @@ import {
   Keyboard, ScrollView, StyleSheet, Text,
   TextInput, TouchableOpacity, View,
 } from 'react-native';
-import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+const isExpoGo = Constants.appOwnership === 'expo';
+const AdsModule = isExpoGo ? null : require('react-native-google-mobile-ads');
 
 // ─── Banco de perguntas ───────────────────────────────────────────────────────
 type Difficulty = 'easy' | 'medium' | 'hard' | 'extreme';
@@ -992,7 +993,7 @@ interface RoundResult { correct: boolean; skipped?: boolean; }
 
 // ─── AdMob ────────────────────────────────────────────────────────────────────
 const AD_UNIT_ID = __DEV__
-  ? TestIds.INTERSTITIAL
+  ? AdsModule?.TestIds?.INTERSTITIAL
   : 'ca-app-pub-6602652515276009/7297292275';
 let matchCountSinceAd = 0;
 
@@ -1011,18 +1012,19 @@ export default function GameScreen() {
   const [phase, setPhase] = useState<Phase>('playing');
 
   const interstitialRef = useRef(
-    InterstitialAd.createForAdRequest(AD_UNIT_ID)
+    isExpoGo ? null : AdsModule.InterstitialAd.createForAdRequest(AD_UNIT_ID)
   );
   const [adLoaded, setAdLoaded] = useState(false);
 
   useEffect(() => {
+    if (isExpoGo) return;
     const ad = interstitialRef.current;
-    const unsubLoad = ad.addAdEventListener(AdEventType.LOADED, () => setAdLoaded(true));
-    const unsubClose = ad.addAdEventListener(AdEventType.CLOSED, () => {
+    const unsubLoad = ad.addAdEventListener(AdsModule.AdEventType.LOADED, () => setAdLoaded(true));
+    const unsubClose = ad.addAdEventListener(AdsModule.AdEventType.CLOSED, () => {
       setAdLoaded(false);
       ad.load();
     });
-    const unsubError = ad.addAdEventListener(AdEventType.ERROR, () => setAdLoaded(false));
+    const unsubError = ad.addAdEventListener(AdsModule.AdEventType.ERROR, () => setAdLoaded(false));
     ad.load();
     return () => { unsubLoad(); unsubClose(); unsubError(); };
   }, []);
@@ -1200,7 +1202,7 @@ export default function GameScreen() {
     setPhase('result');
 
     matchCountSinceAd += 1;
-    if (adLoaded && matchCountSinceAd >= 2) {
+    if (!isExpoGo && adLoaded && matchCountSinceAd >= 2) {
       matchCountSinceAd = 0;
       setTimeout(() => interstitialRef.current.show(), 800);
     }
