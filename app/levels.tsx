@@ -3,8 +3,23 @@ import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getQuestionBank } from './data/questions';
+
+const MIN_QUESTIONS_PER_LEVEL = 1; // ajuste conforme seu padrão (ex: 9 quando os bancos estiverem completos)
+
+function getAvailableLevels(category: string): number {
+  const bank = getQuestionBank(category);
+  let maxLevel = 0;
+  for (let lvl = 1; lvl <= 10; lvl++) {
+    const count = bank.filter((q) => q.level === lvl).length;
+    if (count < MIN_QUESTIONS_PER_LEVEL) break;
+    maxLevel = lvl;
+  }
+  return maxLevel;
+}
+
 const LEVELS = [
   { number: 1,  name: 'Iniciante',     difficulty: 'Fácil',        diffStyle: 'easy' },
   { number: 2,  name: 'Aprendiz',      difficulty: 'Fácil',        diffStyle: 'easy' },
@@ -37,7 +52,9 @@ const modeBadge: Record<string, { bg: string; text: string }> = {
 export default function LevelsScreen() {
   const router = useRouter();
   const { mode, category } = useLocalSearchParams<{ mode: string; category?: string }>();
-  const { getLevelStars, reload } = useGameStore(); // ✏️ adicionar reload
+  const { getLevelStars, reload } = useGameStore();
+
+  const availableLevels = getAvailableLevels(category ?? 'geral');
 
   const badge = modeBadge[mode] ?? modeBadge.multiple;
 
@@ -63,10 +80,12 @@ export default function LevelsScreen() {
         {LEVELS.map((lvl) => {
           const diff = diffColors[lvl.diffStyle];
           const stars = getLevelStars(mode ?? 'multiple', lvl.number);
-          // Desbloqueado se: dentro dos primeiros ALWAYS_UNLOCKED, ou o anterior tem ≥1 estrela
+
+          const noContent = lvl.number > availableLevels;
           const locked =
-            lvl.number > ALWAYS_UNLOCKED &&
-            getLevelStars(mode ?? 'multiple', lvl.number - 1) === 0;
+            noContent ||
+            (lvl.number > ALWAYS_UNLOCKED &&
+              getLevelStars(mode ?? 'multiple', lvl.number - 1) === 0);
 
           return (
             <TouchableOpacity
@@ -74,6 +93,10 @@ export default function LevelsScreen() {
               style={[styles.card, locked && styles.cardLocked]}
               activeOpacity={locked ? 1 : 0.7}
               onPress={() => {
+                if (noContent) {
+                  Alert.alert('Em breve', `O nível ${lvl.number} desta categoria ainda está em produção.`);
+                  return;
+                }
                 if (!locked) router.replace(`/game?mode=${mode}&level=${lvl.number}&category=${category ?? 'geral'}`);
               }}
             >
@@ -83,9 +106,11 @@ export default function LevelsScreen() {
               <Text style={styles.lvlNumber}>{lvl.number}</Text>
               <Text style={styles.lvlName}>{lvl.name}</Text>
               <Text style={styles.stars}>
-                {locked
-                  ? '🔒'
-                  : [1, 2, 3].map((i) => (i <= stars ? '★' : '☆')).join('')}
+                {noContent
+                  ? '🚧'
+                  : locked
+                    ? '🔒'
+                    : [1, 2, 3].map((i) => (i <= stars ? '★' : '☆')).join('')}
               </Text>
             </TouchableOpacity>
           );

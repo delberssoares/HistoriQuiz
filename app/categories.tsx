@@ -14,7 +14,7 @@ interface Category {
 
 const CATEGORIES: Category[] = [
   { id: 'geral', name: 'Geral', desc: 'Todas as figuras misturadas', icon: 'shuffle-outline', ready: true },
-  { id: 'futebol', name: 'Futebol', desc: 'Craques e lendas do futebol', icon: 'football-outline', ready: false },
+  { id: 'futebol', name: 'Futebol', desc: 'Craques e lendas do futebol', icon: 'football-outline', ready: true },
   { id: 'atletas', name: 'Atletas', desc: 'Ídolos de outros esportes', icon: 'trophy-outline', ready: false },
   { id: 'musica', name: 'Música', desc: 'Cantores e bandas icônicas', icon: 'musical-notes-outline', ready: false },
   { id: 'ciencia', name: 'Ciência', desc: 'Cientistas e inventores', icon: 'flask-outline', ready: false },
