@@ -36,7 +36,7 @@ const modeBadge: Record<string, { bg: string; text: string }> = {
 
 export default function LevelsScreen() {
   const router = useRouter();
-  const { mode } = useLocalSearchParams<{ mode: string }>();
+  const { mode, category } = useLocalSearchParams<{ mode: string; category?: string }>();
   const { getLevelStars, reload } = useGameStore(); // ✏️ adicionar reload
 
   const badge = modeBadge[mode] ?? modeBadge.multiple;
@@ -74,7 +74,7 @@ export default function LevelsScreen() {
               style={[styles.card, locked && styles.cardLocked]}
               activeOpacity={locked ? 1 : 0.7}
               onPress={() => {
-                if (!locked) router.replace(`/game?mode=${mode}&level=${lvl.number}`);
+                if (!locked) router.replace(`/game?mode=${mode}&level=${lvl.number}&category=${category ?? 'geral'}`);
               }}
             >
               <View style={[styles.diffBadge, { backgroundColor: diff.bg }]}>

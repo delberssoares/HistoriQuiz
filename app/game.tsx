@@ -1000,7 +1000,7 @@ let matchCountSinceAd = 0;
 
 export default function GameScreen() {
   const router = useRouter();
-  const { mode, level } = useLocalSearchParams<{ mode: string; level: string }>();
+  const { mode, level, category } = useLocalSearchParams<{ mode: string; level: string; category?: string }>();
   const { saveResult } = useGameStore();
 
   const isFree = mode === 'free';
@@ -1261,7 +1261,7 @@ export default function GameScreen() {
           <View style={styles.resultBtnRow}>
             <TouchableOpacity
               style={[styles.confirmBtn, styles.resultBtnHalf]}
-              onPress={() => router.replace(`/game?mode=${mode}&level=${level}`)}
+              onPress={() => router.replace(`/game?mode=${mode}&level=${level}&category=${category ?? 'geral'}`)}
             >
               <Ionicons name="refresh" size={18} color={Colors.primaryLight} />
               <Text style={styles.confirmText}>Jogar novamente</Text>
@@ -1270,7 +1270,7 @@ export default function GameScreen() {
             {levelNum < 10 && (
               <TouchableOpacity
                 style={[styles.confirmBtn, styles.resultBtnHalf, { backgroundColor: Colors.dark }]}
-                onPress={() => router.replace(`/game?mode=${mode}&level=${levelNum + 1}`)}
+                onPress={() => router.replace(`/game?mode=${mode}&level=${levelNum + 1}&category=${category ?? 'geral'}`)}
               >
                 <Ionicons name="arrow-forward" size={18} color={Colors.primaryLight} />
                 <Text style={styles.confirmText}>Próximo nível</Text>
