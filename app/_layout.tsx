@@ -1,10 +1,14 @@
+import Constants from 'expo-constants';
 import { Stack } from 'expo-router';
 import { useEffect } from 'react';
-import mobileAds from 'react-native-google-mobile-ads';
+
+const isExpoGo = Constants.appOwnership === 'expo';
 
 export default function RootLayout() {
   useEffect(() => {
-    mobileAds().initialize();
+    if (!isExpoGo) {
+      require('react-native-google-mobile-ads').default().initialize();
+    }
   }, []);
 
   return (
