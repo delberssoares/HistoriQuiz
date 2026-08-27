@@ -17,6 +17,7 @@ export default function RootLayout() {
       <Stack.Screen name="levels"  options={{ headerShown: false }} />
       <Stack.Screen name="game"    options={{ headerShown: false }} />
       <Stack.Screen name="modal"   options={{ presentation: 'modal' }} />
+      <Stack.Screen name="categories" options={{ title: 'Categorias' }} />
     </Stack>
   );
 }

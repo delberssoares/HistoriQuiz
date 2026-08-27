@@ -3,8 +3,23 @@ import { useGameStore } from '@/hooks/useGameStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { getQuestionBank } from './data/questions';
+
+const MIN_QUESTIONS_PER_LEVEL = 1; // ajuste conforme seu padrão (ex: 9 quando os bancos estiverem completos)
+
+function getAvailableLevels(category: string): number {
+  const bank = getQuestionBank(category);
+  let maxLevel = 0;
+  for (let lvl = 1; lvl <= 10; lvl++) {
+    const count = bank.filter((q) => q.level === lvl).length;
+    if (count < MIN_QUESTIONS_PER_LEVEL) break;
+    maxLevel = lvl;
+  }
+  return maxLevel;
+}
+
 const LEVELS = [
   { number: 1,  name: 'Iniciante',     difficulty: 'Fácil',        diffStyle: 'easy' },
   { number: 2,  name: 'Aprendiz',      difficulty: 'Fácil',        diffStyle: 'easy' },
@@ -34,12 +49,24 @@ const modeBadge: Record<string, { bg: string; text: string }> = {
   free: { bg: '#E1F5EE', text: '#085041' },
 };
 
+// Mesmo mapeamento de id → nome usado em categories.tsx
+const categoryNames: Record<string, string> = {
+  geral: 'Geral',
+  atletas: 'Atletas',
+  musica: 'Música',
+  'ciencia-tecnologia': 'Ciência e Tecnologia',
+  politica: 'Política',
+};
+
 export default function LevelsScreen() {
   const router = useRouter();
-  const { mode } = useLocalSearchParams<{ mode: string }>();
-  const { getLevelStars, reload } = useGameStore(); // ✏️ adicionar reload
+  const { mode, category } = useLocalSearchParams<{ mode: string; category?: string }>();
+  const { getLevelStars, reload } = useGameStore();
+
+  const availableLevels = getAvailableLevels(category ?? 'geral');
 
   const badge = modeBadge[mode] ?? modeBadge.multiple;
+  const categoryName = categoryNames[category ?? 'geral'] ?? category ?? 'Geral';
 
   useFocusEffect(
     useCallback(() => {
@@ -53,7 +80,10 @@ export default function LevelsScreen() {
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={20} color={Colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.topbarTitle}>Escolha o nível</Text>
+        <View style={styles.titleWrap}>
+          <Text style={styles.topbarTitle}>Escolha o nível</Text>
+          <Text style={styles.topbarCategory}>{categoryName}</Text>
+        </View>
         <View style={[styles.badge, { backgroundColor: badge.bg }]}>
           <Text style={[styles.badgeText, { color: badge.text }]}>{modeLabel[mode] ?? mode}</Text>
         </View>
@@ -63,10 +93,12 @@ export default function LevelsScreen() {
         {LEVELS.map((lvl) => {
           const diff = diffColors[lvl.diffStyle];
           const stars = getLevelStars(mode ?? 'multiple', lvl.number);
-          // Desbloqueado se: dentro dos primeiros ALWAYS_UNLOCKED, ou o anterior tem ≥1 estrela
+
+          const noContent = lvl.number > availableLevels;
           const locked =
-            lvl.number > ALWAYS_UNLOCKED &&
-            getLevelStars(mode ?? 'multiple', lvl.number - 1) === 0;
+            noContent ||
+            (lvl.number > ALWAYS_UNLOCKED &&
+              getLevelStars(mode ?? 'multiple', lvl.number - 1) === 0);
 
           return (
             <TouchableOpacity
@@ -74,7 +106,11 @@ export default function LevelsScreen() {
               style={[styles.card, locked && styles.cardLocked]}
               activeOpacity={locked ? 1 : 0.7}
               onPress={() => {
-                if (!locked) router.replace(`/game?mode=${mode}&level=${lvl.number}`);
+                if (noContent) {
+                  Alert.alert('Em breve', `O nível ${lvl.number} desta categoria ainda está em produção.`);
+                  return;
+                }
+                if (!locked) router.replace(`/game?mode=${mode}&level=${lvl.number}&category=${category ?? 'geral'}`);
               }}
             >
               <View style={[styles.diffBadge, { backgroundColor: diff.bg }]}>
@@ -83,9 +119,11 @@ export default function LevelsScreen() {
               <Text style={styles.lvlNumber}>{lvl.number}</Text>
               <Text style={styles.lvlName}>{lvl.name}</Text>
               <Text style={styles.stars}>
-                {locked
-                  ? '🔒'
-                  : [1, 2, 3].map((i) => (i <= stars ? '★' : '☆')).join('')}
+                {noContent
+                  ? '🚧'
+                  : locked
+                    ? '🔒'
+                    : [1, 2, 3].map((i) => (i <= stars ? '★' : '☆')).join('')}
               </Text>
             </TouchableOpacity>
           );
@@ -99,7 +137,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background, paddingHorizontal: 16 },
   topbar: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 },
   backBtn: { width: 34, height: 34, borderWidth: 0.5, borderColor: Colors.border, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background },
-  topbarTitle: { fontSize: 16, fontWeight: '500', color: Colors.textPrimary, flex: 1 },
+  titleWrap: { flex: 1 },
+  topbarTitle: { fontSize: 16, fontWeight: '500', color: Colors.textPrimary },
+  topbarCategory: { fontSize: 12, color: Colors.textSecondary, marginTop: 1 },
   badge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
   badgeText: { fontSize: 11, fontWeight: '500' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingBottom: 32 },

@@ -45,7 +45,7 @@ export default function HomeScreen() {
 
       <Text style={styles.sectionLabel}>MODOS DE JOGO</Text>
       {modes.map((m) => (
-        <TouchableOpacity key={m.id} style={styles.modeBtn} activeOpacity={0.7} onPress={() => router.push(`/levels?mode=${m.id}`)}>
+        <TouchableOpacity key={m.id} style={styles.modeBtn} activeOpacity={0.7} onPress={() => router.push(`/categories?mode=${m.id}`)}>
           <View style={[styles.modeIcon, { backgroundColor: m.iconBg }]}>
             <Ionicons name={m.icon as any} size={22} color={m.iconColor} />
           </View>
