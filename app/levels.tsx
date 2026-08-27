@@ -49,6 +49,15 @@ const modeBadge: Record<string, { bg: string; text: string }> = {
   free: { bg: '#E1F5EE', text: '#085041' },
 };
 
+// Mesmo mapeamento de id → nome usado em categories.tsx
+const categoryNames: Record<string, string> = {
+  geral: 'Geral',
+  atletas: 'Atletas',
+  musica: 'Música',
+  'ciencia-tecnologia': 'Ciência e Tecnologia',
+  politica: 'Política',
+};
+
 export default function LevelsScreen() {
   const router = useRouter();
   const { mode, category } = useLocalSearchParams<{ mode: string; category?: string }>();
@@ -57,6 +66,7 @@ export default function LevelsScreen() {
   const availableLevels = getAvailableLevels(category ?? 'geral');
 
   const badge = modeBadge[mode] ?? modeBadge.multiple;
+  const categoryName = categoryNames[category ?? 'geral'] ?? category ?? 'Geral';
 
   useFocusEffect(
     useCallback(() => {
@@ -70,7 +80,10 @@ export default function LevelsScreen() {
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={20} color={Colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.topbarTitle}>Escolha o nível</Text>
+        <View style={styles.titleWrap}>
+          <Text style={styles.topbarTitle}>Escolha o nível</Text>
+          <Text style={styles.topbarCategory}>{categoryName}</Text>
+        </View>
         <View style={[styles.badge, { backgroundColor: badge.bg }]}>
           <Text style={[styles.badgeText, { color: badge.text }]}>{modeLabel[mode] ?? mode}</Text>
         </View>
@@ -124,7 +137,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background, paddingHorizontal: 16 },
   topbar: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12 },
   backBtn: { width: 34, height: 34, borderWidth: 0.5, borderColor: Colors.border, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.background },
-  topbarTitle: { fontSize: 16, fontWeight: '500', color: Colors.textPrimary, flex: 1 },
+  titleWrap: { flex: 1 },
+  topbarTitle: { fontSize: 16, fontWeight: '500', color: Colors.textPrimary },
+  topbarCategory: { fontSize: 12, color: Colors.textSecondary, marginTop: 1 },
   badge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 20 },
   badgeText: { fontSize: 11, fontWeight: '500' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, paddingBottom: 32 },

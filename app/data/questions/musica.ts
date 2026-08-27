@@ -1,0 +1,121 @@
+import { Question } from './types';
+
+const RAW_MUSICA: Omit<Question, 'id'>[] = [
+    {
+        category: 'musica', level: 1, difficulty: 'easy',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Michael Jackson',
+        image: require('@/assets/images/musica/michael.webp'),
+        aliases: ['michael', 'jackson'],
+        options: ['Michael Jackson', 'Prince', 'David Bowie', 'Elvis Presley'],
+        hint: 'Rei do Pop',
+    },
+
+    {
+        category: 'musica', level: 1, difficulty: 'easy',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Elvis Presley',
+        image: require('@/assets/images/musica/elvis.webp'),
+        aliases: ['elvis', 'presley'],
+        options: ['Elvis Presley', 'Chuck Berry', 'Jerry Lee Lewis', 'Buddy Holly'],
+        hint: 'Rei do Rock and Roll',
+    },
+
+    {
+        category: 'musica', level: 2, difficulty: 'easy',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Bob Marley',
+        image: require('@/assets/images/musica/bobmarley.webp'),
+        aliases: ['bob', 'marley'],
+        options: ['Bob Marley', 'Jimmy Cliff', 'Peter Tosh', 'Burning Spear'],
+        hint: 'Ícone do reggae jamaicano',
+    },
+
+    {
+        category: 'musica', level: 2, difficulty: 'easy',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Freddie Mercury',
+        image: require('@/assets/images/musica/freddiemercury.webp'),
+        aliases: ['freddie', 'mercury'],
+        options: ['Freddie Mercury', 'David Bowie', 'Mick Jagger', 'Robert Plant'],
+        hint: 'Vocalista do Queen, um dos maiores frontmen da história do rock',
+    },
+    {
+        category: 'musica', level: 2, difficulty: 'easy',
+        question: 'Quem é esta figura histórica?',
+        answer: 'John Lennon',
+        image: require('@/assets/images/musica/johnlennon.webp'),
+        aliases: ['john', 'lennon'],
+        options: ['John Lennon', 'Paul McCartney', 'George Harrison', 'Ringo Starr'],
+        hint: 'Cofundador dos Beatles, autor de Imagine',
+    },
+
+    {
+        category: 'musica', level: 4, difficulty: 'medium',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Mozart',
+        image: require('@/assets/images/musica/mozart.webp'),
+        aliases: ['mozart', 'wolfgang', 'amadeus'],
+        options: ['Mozart', 'Beethoven', 'Bach', 'Chopin'],
+        hint: 'Compositor austríaco prodígio do século XVIII',
+    },
+    {
+        category: 'musica', level: 4, difficulty: 'medium',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Beethoven',
+        image: require('@/assets/images/musica/beethoven.webp'),
+        aliases: ['beethoven', 'ludwig'],
+        options: ['Beethoven', 'Mozart', 'Bach', 'Schubert'],
+        hint: 'Compôs a 9ª Sinfonia mesmo após ficar surdo',
+    },
+    {
+        category: 'musica', level: 10, difficulty: 'extreme',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Renato Russo',
+        image: require('@/assets/images/musica/renatorusso.webp'),
+        aliases: ['renato', 'russo', 'renato russo'],
+        options: ['Renato Russo', 'Cazuza', 'Lobão', 'Raul Seixas'],
+        hint: 'Vocalista e compositor da Legião Urbana, um dos maiores ícones do rock brasileiro',
+    },
+    {
+        category: 'musica', level: 9, difficulty: 'extreme',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Cazuza',
+        image: require('@/assets/images/musica/cazuza.webp'),
+        aliases: ['cazuza', 'agenor de miranda'],
+        options: ['Cazuza', 'Renato Russo', 'Lobão', 'Herbert Vianna'],
+        hint: 'Cantor e poeta brasileiro do rock, vocalista do Barão Vermelho, ícone dos anos 80',
+    },
+    {
+        category: 'musica', level: 9, difficulty: 'extreme',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Rita Lee',
+        image: require('@/assets/images/musica/ritalee.webp'),
+        aliases: ['rita', 'lee', 'rita lee'],
+        options: ['Rita Lee', 'Elis Regina', 'Cássia Eller', 'Pitty'],
+        hint: 'Rainha do rock brasileiro, ex-integrante dos Mutantes',
+    },
+    {
+        category: 'musica', level: 9, difficulty: 'extreme',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Brad Arnold',
+        image: require('@/assets/images/musica/bradarnold.webp'),
+        aliases: ['brad', 'arnold', '3 doors down'],
+        options: ['Brad Arnold', 'Chad Kroeger', 'Scott Stapp', 'Dave Grohl'],
+        hint: 'Vocalista e baterista da banda americana 3 Doors Down, conhecida por "Kryptonite"',
+    },
+    {
+        category: 'musica', level: 8, difficulty: 'hard',
+        question: 'Quem é esta figura histórica?',
+        answer: 'Frank Sinatra',
+        image: require('@/assets/images/musica/sinatra.webp'),
+        aliases: ['frank', 'sinatra', 'ol blue eyes'],
+        options: ['Frank Sinatra', 'Dean Martin', 'Sammy Davis Jr.', 'Tony Bennett'],
+        hint: '"Ol\' Blue Eyes", um dos maiores cantores americanos do século XX',
+    },
+
+]
+export const MUSICA_QUESTIONS: Question[] = RAW_MUSICA.map((q, i) => ({
+    ...q,
+    id: `musica-${i + 1}`,
+}));

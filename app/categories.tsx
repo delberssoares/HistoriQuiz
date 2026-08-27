@@ -14,11 +14,10 @@ interface Category {
 
 const CATEGORIES: Category[] = [
   { id: 'geral', name: 'Geral', desc: 'Todas as figuras misturadas', icon: 'shuffle-outline', ready: true },
-  { id: 'futebol', name: 'Futebol', desc: 'Craques e lendas do futebol', icon: 'football-outline', ready: true },
-  { id: 'atletas', name: 'Atletas', desc: 'Ídolos de outros esportes', icon: 'trophy-outline', ready: false },
-  { id: 'musica', name: 'Música', desc: 'Cantores e bandas icônicas', icon: 'musical-notes-outline', ready: false },
-  { id: 'ciencia', name: 'Ciência', desc: 'Cientistas e inventores', icon: 'flask-outline', ready: false },
-  { id: 'politica', name: 'Política', desc: 'Líderes e governantes', icon: 'megaphone-outline', ready: false },
+  { id: 'atletas', name: 'Atletas', desc: 'Ídolos dos esportes', icon: 'trophy-outline', ready: true },
+  { id: 'musica', name: 'Música', desc: 'Cantores e bandas icônicas', icon: 'musical-notes-outline', ready: true },
+  { id: 'ciencia-tecnologia', name: 'Ciência e Tecnologia', desc: 'Cientistas e inventores', icon: 'flask-outline', ready: true },
+  { id: 'politica', name: 'Política', desc: 'Líderes e governantes', icon: 'megaphone-outline', ready: true },
 ];
 
 const modeLabel: Record<string, string> = { multiple: 'Com opções', free: 'Sem opções' };

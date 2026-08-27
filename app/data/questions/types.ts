@@ -1,8 +1,8 @@
 export type Difficulty = 'easy' | 'medium' | 'hard' | 'extreme';
 
 export interface Question {
-  id: number;                 // único DENTRO da categoria (ou global, ver nota abaixo)
-  category: string;           // 'geral' | 'futebol' | 'atletas' | ...
+  id: string;
+  category: string;
   level: number;
   difficulty: Difficulty;
   question: string;
