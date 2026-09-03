@@ -5,7 +5,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getQuestionBank } from './data/questions';
+import { getQuestionBank } from '../src/data/questions';
 
 const MIN_QUESTIONS_PER_LEVEL = 1; // ajuste conforme seu padrão (ex: 9 quando os bancos estiverem completos)
 

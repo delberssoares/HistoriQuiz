@@ -6,16 +6,16 @@ import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import {
-  Animated, Easing,
-  Image,
-  Keyboard, ScrollView, StyleSheet, Text,
-  TextInput, TouchableOpacity, View,
+    Animated, Easing,
+    Image,
+    Keyboard, ScrollView, StyleSheet, Text,
+    TextInput, TouchableOpacity, View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { LEVEL_TIMER } from './data/levelConfig';
-import { getQuestionBank } from './data/questions';
-import { Question } from './data/questions/types';
+import { LEVEL_TIMER } from '../src/data/levelConfig';
+import { getQuestionBank } from '../src/data/questions';
+import { Question } from '../src/data/questions/types';
 
 const isExpoGo = Constants.appOwnership === 'expo';
 const AdsModule = isExpoGo ? null : require('react-native-google-mobile-ads');
